@@ -6,9 +6,12 @@ from pathlib import Path
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
-DEMO_DIR = PROJECT_ROOT / "demo"
+EDGE_DEVICE_ROOT = PROJECT_ROOT.parent
+DEMO_DIR = PROJECT_ROOT / "runtime_outputs"
 DEFAULT_VENV = PROJECT_ROOT / "shouting" / "venv2"
-DROWSINESS_VENV = PROJECT_ROOT / "camera" / "Drowsiness" / ".venv"
+DEPLOY_MODELS_DIR = EDGE_DEVICE_ROOT / "raspberry_pi_deploy" / "models"
+DROWSINESS_RUNTIME_DIR = EDGE_DEVICE_ROOT / "drowsiness_runtime"
+DROWSINESS_VENV = DROWSINESS_RUNTIME_DIR / ".venv"
 
 
 def utc_run_id() -> str:
@@ -41,4 +44,3 @@ class RuntimePaths:
             event_log=proof_dir / "events.jsonl",
             process_log_dir=process_log_dir,
         )
-

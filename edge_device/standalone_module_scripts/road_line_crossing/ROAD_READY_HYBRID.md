@@ -7,8 +7,8 @@ that line between confirmations.
 ## USB Camera Command
 
 ```bash
-cd /home/pi/Downloads/pi_deploy_wave1/pi_deploy_wave3/road_line_project/crossing
-source "/home/pi/FYP demo/shouting/venv2/bin/activate"
+cd ~/vehicular-black-box-violation-detector/edge_device/standalone_module_scripts/road_line_crossing/road_line_project/crossing
+source "../../../shouting/venv2/bin/activate"
 
 python run_hybrid_live.py \
   --camera /dev/video0 \
@@ -33,7 +33,7 @@ Stop with `Ctrl+C`.
 
 ## Send Lane-Crossing Events To Backend
 
-Use the same Cloudflare tunnel / GSM connection pattern as the main demo:
+Use the same Cloudflare tunnel / GSM connection pattern as the integrated runtime:
 
 ```bash
 python run_hybrid_live.py \
@@ -70,10 +70,10 @@ event_type = LANE_CROSSING
 severity = HIGH
 ```
 
-They are queued in the shared demo outbox:
+They are queued in the shared runtime outbox:
 
 ```text
-/home/pi/FYP demo/demo/runtime/outbox/events.sqlite3
+../../../runtime_outputs/runtime/outbox/events.sqlite3
 ```
 
 If the GSM/Cloudflare connection drops, events remain pending and flush later

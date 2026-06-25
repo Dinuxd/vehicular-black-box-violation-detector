@@ -26,9 +26,9 @@ class ReduceSumLambda(tf.keras.layers.Layer):
 
 
 # =========================
-# PATHS (YOUR PI PATH)
+# PATHS
 # =========================
-BASE_DIR     = "/home/pi/FYP demo/hello-new"
+BASE_DIR     = os.path.dirname(os.path.abspath(__file__))
 MODEL_PATH   = os.path.join(BASE_DIR, "hello_cnn_tpool2.keras")
 METRICS_PATH = os.path.join(BASE_DIR, "metrics.json")
 HISTORY_PATH = os.path.join(BASE_DIR, "history.json")
@@ -255,16 +255,16 @@ def main():
     TH_ON  = threshold
     TH_OFF = max(0.0, threshold - 0.05)
 
-    print(f"? Loaded model: {model.input_shape} -> {model.output_shape}", flush=True)
+    print(f"Loaded model: {model.input_shape} -> {model.output_shape}", flush=True)
     print(f"? Using threshold: {threshold:.3f} (TH_ON={TH_ON:.3f}, TH_OFF={TH_OFF:.3f})", flush=True)
-    print(f"??? Device: {ARECORD_DEVICE} @ {CAPTURE_SR}Hz ({ARECORD_FMT})", flush=True)
+    print(f"Device: {ARECORD_DEVICE} @ {CAPTURE_SR}Hz ({ARECORD_FMT})", flush=True)
     print("Press Ctrl+C to stop.\n", flush=True)
 
     proc = start_arecord()
     time.sleep(0.2)
     if proc.poll() is not None:
         err = proc.stderr.read().decode(errors="ignore")
-        print("? arecord exited immediately:\n", err, flush=True)
+        print("arecord exited immediately:\n", err, flush=True)
         return
 
     step_frames = int(CAPTURE_SR * STEP_SEC)
@@ -285,7 +285,7 @@ def main():
             raw = read_exact(proc.stdout, step_bytes)
             if raw is None:
                 err = proc.stderr.read().decode(errors="ignore")
-                print("? Audio stream ended (arecord stopped).", flush=True)
+                print("Audio stream ended (arecord stopped).", flush=True)
                 if err.strip():
                     print("arecord error:\n", err, flush=True)
                 break
@@ -341,13 +341,13 @@ def main():
                 if on_hits >= HITS_ON:
                     triggered = True
                     off_hits = 0
-                    print("? HELLO DETECTED!", flush=True)
+                    print("HELLO DETECTED!", flush=True)
             else:
                 off_hits = off_hits + 1 if smooth <= TH_OFF else 0
                 if off_hits >= HITS_OFF:
                     triggered = False
                     on_hits = 0
-                    print("?? HELLO ended.", flush=True)
+                    print("HELLO ended.", flush=True)
 
             ts = time.strftime("%H:%M:%S")
             state = "HELLO" if triggered else "NOT  "

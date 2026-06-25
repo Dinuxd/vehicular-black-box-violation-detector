@@ -1,4 +1,4 @@
-"""Runtime configuration for the driver monitoring prototype."""
+"""Runtime configuration for driver monitoring."""
 
 from __future__ import annotations
 

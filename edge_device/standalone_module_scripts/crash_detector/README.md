@@ -1,11 +1,11 @@
 # Raspberry Pi Crash Detector
 
-This folder is the copy-and-paste deployment package for the prototype crash detection system.
+This folder is the Raspberry Pi deployment package for the crash detection system.
 
 It includes:
 
 - Audio CNN detector
-- IMU Keras AI detector
+- IMU Keras CNN-GRU detector
 - IMU threshold/rule detector
 - Combined fusion runner
 
@@ -14,7 +14,7 @@ It includes:
 Copy the whole folder:
 
 ```bash
-raspberry_pi_crash_detector/
+crash_detector/
 ```
 
 to your Raspberry Pi 4B.
@@ -26,14 +26,14 @@ Recommended OS: Raspberry Pi OS 64-bit.
 Open a terminal inside this folder on the Pi:
 
 ```bash
-cd raspberry_pi_crash_detector
+cd crash_detector
 sudo apt update
 sudo apt install -y python3-venv libsndfile1 portaudio19-dev
 bash install_pi.sh
 source .venv/bin/activate
 ```
 
-For the full system including the IMU AI model, install TensorFlow too:
+For the full system including the IMU neural model, install TensorFlow too:
 
 ```bash
 bash install_pi.sh --with-tensorflow
@@ -78,23 +78,23 @@ python imu_threshold_detector.py --csv samples/sample_imu_normal.csv
 python imu_threshold_detector.py --csv samples/sample_imu_threshold_crash.csv
 ```
 
-IMU AI model:
+IMU neural model:
 
 ```bash
 python imu_ai_detector.py --csv samples/sample_imu_crash.csv
 ```
 
-If the IMU AI command says TensorFlow is unavailable, run `bash install_pi.sh --with-tensorflow`.
+If the IMU neural command says TensorFlow is unavailable, run `bash install_pi.sh --with-tensorflow`.
 
 ## 4. Run Combined Audio + IMU Detection
 
 Confirmed crash test without TensorFlow:
 
 ```bash
-python combined_detect.py --audio samples/sample_car_crash.wav --imu-csv samples/sample_imu_threshold_crash.csv --skip-imu-ai
+python combined_detect.py --audio samples/sample_car_crash.wav --imu-csv samples/sample_imu_threshold_crash.csv --skip-imu-neural
 ```
 
-Full system test with IMU AI:
+Full system test with IMU neural model:
 
 ```bash
 python combined_detect.py --audio samples/sample_car_crash.wav --imu-csv samples/sample_imu_crash.csv
@@ -161,7 +161,7 @@ python detect_crash.py mic --device 1 --seconds 60
 
 ## 7. Expected IMU CSV Columns
 
-For IMU AI:
+For IMU neural model:
 
 ```text
 Acc_X, Acc_Y, Acc_Z, Gyro_X, Gyro_Y, Gyro_Z, Speed_kmh
@@ -179,5 +179,5 @@ The scripts accept common uppercase/lowercase variants such as `Acc_X` and `acc_
 
 - The model expects mono audio at 44.1 kHz. The script converts normal audio files automatically.
 - Live microphone mode records at 44.1 kHz.
-- This is a prototype detector trained from the current dataset. Test it with real Raspberry Pi recordings before trusting it in the field.
+- The detector is trained from the current dataset. Test it with real Raspberry Pi recordings before trusting it in the field.
 - `combined_detect.py` confirms a crash when at least two detector signals agree. A single detector signal becomes `POSSIBLE_CRASH`.

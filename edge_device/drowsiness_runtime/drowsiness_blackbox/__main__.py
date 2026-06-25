@@ -1,4 +1,4 @@
-"""Command line entry point for the driver drowsiness prototype."""
+"""Command line entry point for driver drowsiness monitoring."""
 
 from __future__ import annotations
 

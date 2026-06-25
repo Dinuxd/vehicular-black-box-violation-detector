@@ -1,22 +1,23 @@
-﻿# Vehicular Black Box Demo
+﻿# Vehicular Black Box Integrated Runtime
 
 Run from the project root:
 
 ```bash
-source /home/pi/FYP\ demo/shouting/venv2/bin/activate
-python demo/demo.py --menu
-python demo/demo.py --profile 7
-python demo/demo.py --profile 1 --api-base-url https://<cloudflare>.trycloudflare.com
-python demo/demo.py --profile 20 --api-base-url https://<cloudflare>.trycloudflare.com
+cd ~/vehicular-black-box-violation-detector/edge_device/standalone_module_scripts
+source shouting/venv2/bin/activate
+python -m demo_runtime.demo --menu
+python -m demo_runtime.demo --profile 7
+python -m demo_runtime.demo --profile 1 --api-base-url https://<cloudflare>.trycloudflare.com
+python -m demo_runtime.demo --profile 20 --api-base-url https://<cloudflare>.trycloudflare.com
 ```
 
 Camera preview windows are shown automatically when `drowsiness`, `road_sign`, or `lane_crossing`
 runs on an attached Raspberry Pi desktop/display:
 
 ```bash
-python demo/demo.py --profile 4
-python demo/demo.py --profile 21
-python demo/demo.py --profile 1 --api-base-url https://<cloudflare>.trycloudflare.com
+python -m demo_runtime.demo --profile 4
+python -m demo_runtime.demo --profile 21
+python -m demo_runtime.demo --profile 1 --api-base-url https://<cloudflare>.trycloudflare.com
 ```
 
 For headless SSH runs, disable camera windows with `--no-display`.
@@ -26,7 +27,7 @@ until one returns frames. If you already know the driver-facing camera index,
 pin it explicitly:
 
 ```bash
-python demo/demo.py --profile 14 --drowsiness-camera 1 --display
+python -m demo_runtime.demo --profile 14 --drowsiness-camera 1 --display
 ```
 
 If the camera clicks or powers on but no preview appears, check the kernel log:
@@ -38,30 +39,30 @@ v4l2-ctl --list-devices
 
 Repeated USB `over-current` or disconnect/reconnect messages mean the camera is
 detected but cannot stream reliably. Use a powered USB hub or reduce USB load
-before rerunning the demo.
+before rerunning the runtime.
 
-If GPS is on a known UART, set it explicitly. Otherwise the demo uses auto-detect
+If GPS is on a known UART, set it explicitly. Otherwise the runtime uses auto-detect
 and tries `/dev/ttyAMA3`, `/dev/serial0`, other `ttyAMA*`, `ttyUSB0`, and `ttyACM0`.
 
 ```bash
-python demo/demo.py --profile 1 --gps-port /dev/ttyAMA3
+python -m demo_runtime.demo --profile 1 --gps-port /dev/ttyAMA3
 ```
 
 Useful single-model examples:
 
 ```bash
-python demo/demo.py --profile 11  # hello
-python demo/demo.py --profile 12  # horn
-python demo/demo.py --profile 13  # shouting
-python demo/demo.py --profile 21  # lane crossing violation
-python demo/demo.py --models hello,horn,shouting
-python demo/demo.py --models harsh,aggressive,tamper
+python -m demo_runtime.demo --profile 11  # hello
+python -m demo_runtime.demo --profile 12  # horn
+python -m demo_runtime.demo --profile 13  # shouting
+python -m demo_runtime.demo --profile 21  # lane crossing violation
+python -m demo_runtime.demo --models hello,horn,shouting
+python -m demo_runtime.demo --models harsh,aggressive,tamper
 ```
 
 Profile `21` runs the new road-line/lane-crossing violation module. It uses the
 Wave 3 hybrid runner: ONNX segmentation confirms the restricted solid line, then
 OpenCV optical flow tracks the line between model passes. Local evidence is saved
-under `demo/proof/<run_id>/lane_crossing/events/` and backend events use:
+under `runtime_outputs/proof/<run_id>/lane_crossing/events/` and backend events use:
 
 ```text
 event_type = LANE_CROSSING
@@ -73,16 +74,16 @@ Road-sign and lane-crossing default to the same road camera source
 run them separately or set a different source:
 
 ```bash
-python demo/demo.py --profile 21 --lane-crossing-camera /dev/video2 --gps-port /dev/ttyAMA3 \
+python -m demo_runtime.demo --profile 21 --lane-crossing-camera /dev/video2 --gps-port /dev/ttyAMA3 \
   --api-base-url https://<your-tunnel>.trycloudflare.com
-python demo/demo.py --profile 4 --road-sign-source /dev/video0 --lane-crossing-camera /dev/video2
+python -m demo_runtime.demo --profile 4 --road-sign-source /dev/video0 --lane-crossing-camera /dev/video2
 ```
 
 Profile `20` runs startup/connectivity checks, then starts audio all, drowsiness,
 tamper, heartbeat, and the GPS-only speeding monitor:
 
 ```bash
-python demo/demo.py --profile 20 --audio-rate 44100 --shouting-gain 5 --gps-port /dev/ttyAMA3 \
+python -m demo_runtime.demo --profile 20 --audio-rate 44100 --shouting-gain 5 --gps-port /dev/ttyAMA3 \
   --api-base-url https://<your-tunnel>.trycloudflare.com
 ```
 
@@ -109,7 +110,7 @@ GPS speed alone also sends `SPEEDING` with severity `HIGH` when speed is
 with `--no-gps-speeding`. To run only this GPS-speeding monitor:
 
 ```bash
-python demo/demo.py --profile 22 --gps-port /dev/ttyAMA3 \
+python -m demo_runtime.demo --profile 22 --gps-port /dev/ttyAMA3 \
   --api-base-url https://<your-tunnel>.trycloudflare.com
 ```
 
@@ -121,23 +122,23 @@ Horn detection defaults are intentionally conservative for the demo:
 too easily, increase `--horn-th-on` to `0.80`.
 
 ```bash
-python demo/demo.py --profile 12 --gps-port /dev/ttyAMA3 \
+python -m demo_runtime.demo --profile 12 --gps-port /dev/ttyAMA3 \
   --api-base-url https://<your-tunnel>.trycloudflare.com
 ```
 
 For shouting-only testing, capture at 16 kHz to match the original shouting
 runner. If the printed `raw_rms` stays very low while someone is shouting near
 the mic, move closer to the mic or add `--shouting-gain 5`.
-The demo trigger is tuned for your current mic level with
+The runtime trigger is tuned for your current mic level with
 `--shouting-th-on 0.15 --shouting-th-off 0.05`.
 
 ```bash
-python demo/demo.py --profile 13 --audio-rate 16000 --gps-port /dev/ttyAMA3 \
+python -m demo_runtime.demo --profile 13 --audio-rate 16000 --gps-port /dev/ttyAMA3 \
   --api-base-url https://<your-tunnel>.trycloudflare.com
 ```
 
-Events are queued in `demo/runtime/outbox/events.sqlite3` and local proof is saved in
-`demo/proof/<run_id>/`. If `API_BASE_URL` or `--api-base-url` is not provided, events stay queued.
+Events are queued in `runtime_outputs/runtime/outbox/events.sqlite3` and local proof is saved in
+`runtime_outputs/proof/<run_id>/`. If `API_BASE_URL` or `--api-base-url` is not provided, events stay queued.
 Ctrl+C uses fast shutdown by default; unsent events stay in the outbox and retry
 on the next run. If you want to wait for one final backend retry before exit,
 add `--final-flush-on-exit`.
@@ -151,34 +152,34 @@ For the SIMCom A7670G wired to Raspberry Pi GPIO14/GPIO15, the modem is normally
 `hutch3g`, then waits for `ppp0`:
 
 ```bash
-python demo/demo.py --profile 1 --gps-port /dev/ttyAMA3 \
+python -m demo_runtime.demo --profile 1 --gps-port /dev/ttyAMA3 \
   --api-base-url https://<your-tunnel>.trycloudflare.com
 ```
 
 If your SIM uses a different APN, override it:
 
 ```bash
-python demo/demo.py --profile 1 --lte-apn hutch3g --gps-port /dev/ttyAMA3 \
+python -m demo_runtime.demo --profile 1 --lte-apn hutch3g --gps-port /dev/ttyAMA3 \
   --api-base-url https://<your-tunnel>.trycloudflare.com
 ```
 
 To test only LTE PPP in a separate terminal:
 
 ```bash
-python demo/lte_ppp.py --port /dev/ttyS0 --apn hutch3g
+python -m demo_runtime.lte_ppp --port /dev/ttyS0 --apn hutch3g
 ```
 
 Use Wi-Fi only when you explicitly add `--wifi`:
 
 ```bash
-python demo/demo.py --profile 1 --wifi --gps-port /dev/ttyAMA3 \
+python -m demo_runtime.demo --profile 1 --wifi --gps-port /dev/ttyAMA3 \
   --api-base-url https://<your-tunnel>.trycloudflare.com
 ```
 
 Advanced override:
 
 ```bash
-python demo/demo.py --profile 1 --backend-interface wlan0 --api-base-url https://<cloudflare>.trycloudflare.com
-python demo/demo.py --profile 1 --backend-interface default --api-base-url https://<cloudflare>.trycloudflare.com
+python -m demo_runtime.demo --profile 1 --backend-interface wlan0 --api-base-url https://<cloudflare>.trycloudflare.com
+python -m demo_runtime.demo --profile 1 --backend-interface default --api-base-url https://<cloudflare>.trycloudflare.com
 ```
 

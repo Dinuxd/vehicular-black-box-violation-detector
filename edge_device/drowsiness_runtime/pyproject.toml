@@ -1,7 +1,7 @@
 [project]
 name = "vehicular-blackbox-drowsiness"
 version = "0.1.0"
-description = "Raspberry Pi MediaPipe driver drowsiness and attention monitoring prototype"
+description = "Raspberry Pi MediaPipe driver drowsiness and attention monitoring runtime"
 requires-python = ">=3.11"
 dependencies = [
     "mediapipe==0.10.18",

@@ -1,6 +1,6 @@
 ﻿# Vehicular Black Box Driver Drowsiness Prototype
 
-This project is a Raspberry Pi 4 camera-only prototype for detecting driver eye closure, drowsiness, head nodding, and attention-away events using a USB IR-cut camera and MediaPipe Face Landmarker.
+This project is a Raspberry Pi 4 camera-only runtime for detecting driver eye closure, drowsiness, head nodding, and attention-away events using a USB IR-cut camera and MediaPipe Face Landmarker.
 
 ## Hardware
 

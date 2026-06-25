@@ -67,10 +67,10 @@
       "action": "export_pytorch"
     },
     "crash_imu": {
-      "source": "../Crash detection/IMU AI/models/accident_cnn_gru.keras",
+      "source": "../Crash detection/IMU neural/models/accident_cnn_gru.keras",
       "deploy": "models/imu/crash_imu_int8.tflite",
-      "scaler_source": "../Crash detection/IMU AI/models/scaler.joblib",
-      "metadata_source": "../Crash detection/IMU AI/models/metadata.json",
+      "scaler_source": "../Crash detection/IMU neural/models/scaler.joblib",
+      "metadata_source": "../Crash detection/IMU neural/models/metadata.json",
       "format": "tflite_int8",
       "action": "convert_keras_unrolled_gru",
       "notes": "Rebuilds the fixed 16-sample GRU with unroll=True before TFLite export so the Pi runtime does not need the Flex delegate."

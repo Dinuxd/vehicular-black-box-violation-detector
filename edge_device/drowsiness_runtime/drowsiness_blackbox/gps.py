@@ -1,4 +1,4 @@
-"""GPS lookup with a fixed fallback for demo runs."""
+"""GPS lookup with a fixed fallback for offline runs."""
 
 from __future__ import annotations
 

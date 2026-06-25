@@ -6,7 +6,7 @@ import tensorflow as tf
 import urllib.request
 import urllib.error
 
-BASE_DIR     = "/home/pi/FYP demo/shouting"
+BASE_DIR     = os.path.dirname(os.path.abspath(__file__))
 CONFIG_PATH  = os.path.join(BASE_DIR, "config.json")
 META_PATH    = os.path.join(BASE_DIR, "metadata.json")
 WEIGHTS_PATH = os.path.join(BASE_DIR, "model.weights.h5")
@@ -265,11 +265,11 @@ def main():
     COOLDOWN_SEC = float(cfg.get("event_cooldown_sec", 3.0))
     last_event_ts = 0.0
 
-    print("? Loaded shouting model")
+    print("Loaded shouting model")
     print("   input :", model.input_shape)
     print("   output:", model.output_shape)
-    print(f"??? POST create -> {events_url}")
-    print(f"??? POST finalize -> {finalize_base}/<event_id>/finalize")
+    print(f"POST create -> {events_url}")
+    print(f"POST finalize -> {finalize_base}/<event_id>/finalize")
     print(f"   device_id={device_id}")
     print("\nPress Ctrl+C to stop.\n", flush=True)
 
@@ -277,7 +277,7 @@ def main():
     time.sleep(0.2)
     if proc.poll() is not None:
         err = proc.stderr.read().decode(errors="ignore")
-        print("? arecord exited immediately:\n", err, flush=True)
+        print("arecord exited immediately:\n", err, flush=True)
         return
 
     step_frames = int(SR * STEP_SEC)
@@ -295,14 +295,14 @@ def main():
 
     sent_q, fail_q = flush_queue(events_url, finalize_base, headers)
     if sent_q or fail_q:
-        print(f"? queue flush: sent={sent_q} failed={fail_q}", flush=True)
+        print(f"queue flush: sent={sent_q} failed={fail_q}", flush=True)
 
     try:
         while True:
             raw = read_exact(proc.stdout, step_bytes)
             if raw is None:
                 err = proc.stderr.read().decode(errors="ignore")
-                print("? Audio stream ended.", flush=True)
+                print("Audio stream ended.", flush=True)
                 if err.strip():
                     print("arecord error:\n", err, flush=True)
                 break
@@ -358,7 +358,7 @@ def main():
                 if on_hits >= HITS_ON:
                     triggered = True
                     off_hits = 0
-                    print("?? SHOUTING DETECTED!", flush=True)
+                    print("SHOUTING DETECTED!", flush=True)
 
                     now = time.time()
                     if now - last_event_ts >= COOLDOWN_SEC:
@@ -381,24 +381,24 @@ def main():
                         try:
                             ok, msg = send_create_then_finalize(events_url, finalize_base, payload, headers)
                             if ok:
-                                print(f"? CREATE+FINALIZE OK event_id={payload['event_id']}", flush=True)
+                                print(f"CREATE+FINALIZE OK event_id={payload['event_id']}", flush=True)
                             else:
-                                print(f"? CREATE/FINALIZE FAIL queued event_id={payload['event_id']} msg={msg}", flush=True)
+                                print(f"CREATE/FINALIZE FAIL queued event_id={payload['event_id']} msg={msg}", flush=True)
                                 enqueue_event(payload)
                         except Exception as e:
-                            print(f"? EXCEPTION queued event_id={payload['event_id']} err={e}", flush=True)
+                            print(f"EXCEPTION queued event_id={payload['event_id']} err={e}", flush=True)
                             enqueue_event(payload)
 
                     sent_q, fail_q = flush_queue(events_url, finalize_base, headers)
                     if sent_q:
-                        print(f"? queue flush: sent={sent_q} remaining_failed={fail_q}", flush=True)
+                        print(f"queue flush: sent={sent_q} remaining_failed={fail_q}", flush=True)
 
             else:
                 off_hits = off_hits + 1 if smooth <= TH_OFF else 0
                 if off_hits >= HITS_OFF:
                     triggered = False
                     on_hits = 0
-                    print("? Shouting ended.", flush=True)
+                    print("Shouting ended.", flush=True)
 
             ts = time.strftime("%H:%M:%S")
             state = "SHOUT" if triggered else "NOT  "

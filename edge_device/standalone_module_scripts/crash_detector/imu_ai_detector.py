@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Keras IMU crash detector runner for Raspberry Pi deployment."""
+"""Keras CNN-GRU IMU crash detector runner for Raspberry Pi deployment."""
 
 from __future__ import annotations
 
@@ -53,7 +53,7 @@ def load_artifacts(model_dir: Path = DEFAULT_MODEL_DIR) -> dict:
     except Exception as exc:
         raise RuntimeError(
             "TensorFlow could not be imported. Install a Raspberry Pi compatible TensorFlow package "
-            "or run without the IMU AI detector."
+            "or run without the IMU neural detector."
         ) from exc
 
     return {
@@ -74,7 +74,7 @@ def normalize_columns(df: pd.DataFrame, feature_cols: list[str]) -> pd.DataFrame
                 break
     missing = [col for col in feature_cols if col not in out.columns]
     if missing:
-        raise ValueError(f"Missing IMU AI columns: {missing}")
+        raise ValueError(f"Missing IMU crash-model columns: {missing}")
     return out
 
 
@@ -143,9 +143,9 @@ def predict_imu_csv(
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Run Keras IMU AI crash detection.")
+    parser = argparse.ArgumentParser(description="Run Keras CNN-GRU IMU crash detection.")
     parser.add_argument("--csv", required=True, help="Input IMU CSV.")
-    parser.add_argument("--model-dir", default=str(DEFAULT_MODEL_DIR), help="IMU AI model directory.")
+    parser.add_argument("--model-dir", default=str(DEFAULT_MODEL_DIR), help="IMU neural model directory.")
     parser.add_argument("--threshold", type=float, default=None, help="Override saved threshold.")
     parser.add_argument("--out", default=None, help="Optional output windows CSV.")
     parser.add_argument("--json", action="store_true", help="Print JSON result.")
@@ -154,7 +154,7 @@ def main() -> int:
     try:
         result = predict_imu_csv(Path(args.csv), Path(args.model_dir), args.threshold)
     except Exception as exc:
-        print(f"IMU AI unavailable or failed: {exc}")
+        print(f"IMU neural detector unavailable or failed: {exc}")
         return 2
     if args.out:
         pd.DataFrame(result["windows"]).to_csv(args.out, index=False)
@@ -164,7 +164,7 @@ def main() -> int:
         compact.pop("windows", None)
         print(json.dumps(compact, indent=2))
     else:
-        print(f"IMU AI detected: {result['detected']}")
+        print(f"IMU neural detected: {result['detected']}")
         print(f"Max probability: {result['max_probability']:.4f}")
         print(f"Threshold: {result['threshold']:.4f}")
         print(f"Crash windows: {result['crash_window_count']}")

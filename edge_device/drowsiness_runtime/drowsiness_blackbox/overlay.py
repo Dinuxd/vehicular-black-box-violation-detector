@@ -1,4 +1,4 @@
-"""Optional on-screen overlay for demo mode."""
+"""Optional on-screen overlay for live monitoring."""
 
 from __future__ import annotations
 

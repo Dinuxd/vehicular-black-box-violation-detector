@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 import argparse
-import fcntl
 import os
 import shlex
 import shutil
@@ -18,8 +17,12 @@ from pathlib import Path
 if __package__ is None or __package__ == "":
     sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from demo.runtime import DEMO_DIR
+from .runtime import DEMO_DIR
 
+try:
+    import fcntl
+except ImportError:  # Windows import checks do not provide Unix ioctl support.
+    fcntl = None
 
 SIOCGIFADDR = 0x8915
 
@@ -32,6 +35,8 @@ class PPPStartResult:
 
 
 def interface_ipv4(interface: str) -> str | None:
+    if fcntl is None:
+        return None
     try:
         with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:
             ifreq = struct.pack("256s", interface[:15].encode("utf-8"))

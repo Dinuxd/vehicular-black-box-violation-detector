@@ -5,7 +5,8 @@ This folder contains the three final model artifacts and one runner script.
 Run on the Raspberry Pi:
 
 ```bash
-source /home/pi/FYP\ demo/shouting/venv2/bin/activate
+cd ~/vehicular-black-box-violation-detector/edge_device/standalone_module_scripts/imu
+source ../shouting/venv2/bin/activate
 export API_BASE_URL="https://<your-tunnel>.trycloudflare.com"
 export DEVICE_ID="pi-001"
 python run_imu_models.py \

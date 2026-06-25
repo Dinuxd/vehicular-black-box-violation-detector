@@ -6,7 +6,7 @@ import tensorflow as tf
 # -------------------------
 # PATHS
 # -------------------------
-BASE_DIR = "/home/pi/FYP demo/horn-new"
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 MODEL_PATH = os.path.join(BASE_DIR, "horn_cnn_best.keras")
 NORM_PATH  = os.path.join(BASE_DIR, "norm_stats.npz")
 
@@ -95,18 +95,18 @@ def main():
 
     # Load model
     model = tf.keras.models.load_model(MODEL_PATH)
-    print(f"? Loaded model: {model.input_shape} -> {model.output_shape}", flush=True)
-    print(f"? Norm: mean={mean:.6f}, std={std:.6f}", flush=True)
+    print(f"Loaded model: {model.input_shape} -> {model.output_shape}", flush=True)
+    print(f"Norm: mean={mean:.6f}, std={std:.6f}", flush=True)
 
     # Start audio stream
     proc = start_arecord()
     time.sleep(0.2)
     if proc.poll() is not None:
         err = proc.stderr.read().decode(errors="ignore")
-        print("? arecord exited immediately:\n", err, flush=True)
+        print("arecord exited immediately:\n", err, flush=True)
         return
 
-    print(f"??? Live capture started: {ARECORD_DEVICE} @ {CAPTURE_SR}Hz ({ARECORD_FMT})", flush=True)
+    print(f"Live capture started: {ARECORD_DEVICE} @ {CAPTURE_SR}Hz ({ARECORD_FMT})", flush=True)
     print("Press Ctrl+C to stop.\n", flush=True)
 
     step_frames = int(CAPTURE_SR * STEP_SEC)
@@ -127,7 +127,7 @@ def main():
             raw = read_exact(proc.stdout, step_bytes)
             if raw is None:
                 err = proc.stderr.read().decode(errors="ignore")
-                print("? Audio stream ended (arecord stopped).", flush=True)
+                print("Audio stream ended (arecord stopped).", flush=True)
                 if err.strip():
                     print("arecord error:\n", err, flush=True)
                 break
@@ -177,13 +177,13 @@ def main():
                 if on_hits >= HITS_ON:
                     triggered = True
                     off_hits = 0
-                    print("?? HORN DETECTED!", flush=True)
+                    print("HORN DETECTED!", flush=True)
             else:
                 off_hits = off_hits + 1 if smooth <= TH_OFF else 0
                 if off_hits >= HITS_OFF:
                     triggered = False
                     on_hits = 0
-                    print("? Horn ended.", flush=True)
+                    print("Horn ended.", flush=True)
 
             ts = time.strftime("%H:%M:%S")
             state = "HORN" if triggered else "NOT "

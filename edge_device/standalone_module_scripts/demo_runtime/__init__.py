@@ -1,2 +1,1 @@
-"""Demo orchestrator package for the vehicular black box project."""
-
+"""Integrated runtime orchestration package for the vehicular black box project."""

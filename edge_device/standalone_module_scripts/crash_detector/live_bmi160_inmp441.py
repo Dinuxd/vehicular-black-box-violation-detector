@@ -392,32 +392,32 @@ def probe_bmi160(args: argparse.Namespace) -> int:
 def imu_worker(args: argparse.Namespace, state: FusionState, stop_event: threading.Event) -> None:
     from imu_threshold_detector import detect_threshold_events
 
-    imu_ai = None
-    if not args.skip_imu_ai:
+    imu_neural = None
+    if not args.skip_imu_neural:
         try:
             from imu_ai_detector import load_artifacts, transform_windows
 
-            artifacts = load_artifacts(Path(args.imu_ai_model_dir))
+            artifacts = load_artifacts(Path(args.imu_neural_model_dir))
             metadata = artifacts["metadata"]
-            imu_ai = {
+            imu_neural = {
                 "model": artifacts["model"],
                 "scaler": artifacts["scaler"],
                 "feature_cols": list(metadata["feature_columns"]),
                 "window_size": int(metadata["window_size"]),
                 "threshold": float(
-                    args.imu_ai_threshold
-                    if args.imu_ai_threshold is not None
+                    args.imu_neural_threshold
+                    if args.imu_neural_threshold is not None
                     else metadata["selected_threshold"]
                 ),
                 "transform_windows": transform_windows,
             }
             print(
-                "IMU AI model loaded: "
-                f"window_size={imu_ai['window_size']} threshold={imu_ai['threshold']:.4f}",
+                "IMU neural model loaded: "
+                f"window_size={imu_neural['window_size']} threshold={imu_neural['threshold']:.4f}",
                 flush=True,
             )
         except Exception as exc:
-            print(f"IMU AI unavailable, continuing with threshold IMU only: {exc}", flush=True)
+            print(f"IMU neural model unavailable, continuing with threshold IMU only: {exc}", flush=True)
 
     gps_reader = None
     if not args.no_gps:
@@ -434,10 +434,10 @@ def imu_worker(args: argparse.Namespace, state: FusionState, stop_event: threadi
 
     sample_interval = 1.0 / args.imu_rate_hz
     rows: deque[dict] = deque(maxlen=max(int(args.imu_history_sec * args.imu_rate_hz), 20))
-    ai_rows: deque[dict] = deque(maxlen=int(imu_ai["window_size"]) if imu_ai else 16)
+    neural_rows: deque[dict] = deque(maxlen=int(imu_neural["window_size"]) if imu_neural else 16)
     last_eval = 0.0
-    last_ai_sample = 0.0
-    last_ai_eval = 0.0
+    last_neural_sample = 0.0
+    last_neural_eval = 0.0
     last_event_t = -9999.0
 
     print(
@@ -467,35 +467,35 @@ def imu_worker(args: argparse.Namespace, state: FusionState, stop_event: threadi
             rows.append(row)
             next_sample += sample_interval
 
-            if imu_ai and now - last_ai_sample >= args.imu_ai_sample_sec:
-                ai_rows.append(row)
-                last_ai_sample = now
+            if imu_neural and now - last_neural_sample >= args.imu_neural_sample_sec:
+                neural_rows.append(row)
+                last_neural_sample = now
 
-            if imu_ai and len(ai_rows) >= imu_ai["window_size"] and now - last_ai_eval >= args.imu_ai_eval_sec:
-                last_ai_eval = now
+            if imu_neural and len(neural_rows) >= imu_neural["window_size"] and now - last_neural_eval >= args.imu_neural_eval_sec:
+                last_neural_eval = now
                 try:
-                    feature_cols = imu_ai["feature_cols"]
-                    window = pd.DataFrame(ai_rows)[feature_cols].to_numpy(dtype=np.float32)
+                    feature_cols = imu_neural["feature_cols"]
+                    window = pd.DataFrame(neural_rows)[feature_cols].to_numpy(dtype=np.float32)
                     x_windows = np.asarray([window], dtype=np.float32)
-                    x_scaled = imu_ai["transform_windows"](x_windows, imu_ai["scaler"])
-                    probability = float(imu_ai["model"].predict(x_scaled, verbose=0).ravel()[0])
-                    threshold = float(imu_ai["threshold"])
+                    x_scaled = imu_neural["transform_windows"](x_windows, imu_neural["scaler"])
+                    probability = float(imu_neural["model"].predict(x_scaled, verbose=0).ravel()[0])
+                    threshold = float(imu_neural["threshold"])
                     if probability >= threshold:
                         state.mark(
                             "imu",
-                            f"ai_probability={probability:.4f} threshold={threshold:.4f} "
+                            f"neural_probability={probability:.4f} threshold={threshold:.4f} "
                             f"speed={speed_kmh:.2f}km/h",
                         )
                     elif args.print_all:
                         print(
-                            f"[{state.rel_time():8.2f}s] imu ai clear "
+                            f"[{state.rel_time():8.2f}s] imu neural clear "
                             f"prob={probability:.4f} threshold={threshold:.4f} "
                             f"speed={speed_kmh:.2f}km/h",
                             flush=True,
                         )
                 except Exception as exc:
                     if args.print_all:
-                        print(f"[{state.rel_time():8.2f}s] IMU AI eval skipped: {exc}", flush=True)
+                        print(f"[{state.rel_time():8.2f}s] IMU neural eval skipped: {exc}", flush=True)
 
             if now - last_eval < args.imu_eval_sec or len(rows) < 8:
                 continue
@@ -540,11 +540,16 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--audio-threshold", type=float, default=None, help="Override saved audio threshold.")
     parser.add_argument("--audio-score-every", type=float, default=2.0, help="Seconds between audio model scores.")
     parser.add_argument("--threads", type=int, default=2, help="CPU threads for loading the audio model.")
-    parser.add_argument("--imu-ai-model-dir", default=str(BASE_DIR / "models" / "imu_ai"), help="IMU AI model directory.")
-    parser.add_argument("--imu-ai-threshold", type=float, default=None, help="Override saved IMU AI threshold.")
-    parser.add_argument("--skip-imu-ai", action="store_true", help="Skip TensorFlow/Keras IMU AI detector.")
-    parser.add_argument("--imu-ai-sample-sec", type=float, default=1.0, help="Seconds between samples sent to IMU AI model.")
-    parser.add_argument("--imu-ai-eval-sec", type=float, default=1.0, help="Seconds between IMU AI predictions.")
+    parser.add_argument("--imu-neural-model-dir", default=str(BASE_DIR / "models" / "imu_ai"), help="IMU neural model directory.")
+    parser.add_argument("--imu-ai-model-dir", dest="imu_neural_model_dir", default=argparse.SUPPRESS, help=argparse.SUPPRESS)
+    parser.add_argument("--imu-neural-threshold", type=float, default=None, help="Override saved IMU neural threshold.")
+    parser.add_argument("--imu-ai-threshold", dest="imu_neural_threshold", type=float, default=argparse.SUPPRESS, help=argparse.SUPPRESS)
+    parser.add_argument("--skip-imu-neural", action="store_true", help="Skip TensorFlow/Keras IMU neural detector.")
+    parser.add_argument("--skip-imu-ai", dest="skip_imu_neural", action="store_true", help=argparse.SUPPRESS)
+    parser.add_argument("--imu-neural-sample-sec", type=float, default=1.0, help="Seconds between samples sent to IMU neural model.")
+    parser.add_argument("--imu-ai-sample-sec", dest="imu_neural_sample_sec", type=float, default=argparse.SUPPRESS, help=argparse.SUPPRESS)
+    parser.add_argument("--imu-neural-eval-sec", type=float, default=1.0, help="Seconds between IMU neural predictions.")
+    parser.add_argument("--imu-ai-eval-sec", dest="imu_neural_eval_sec", type=float, default=argparse.SUPPRESS, help=argparse.SUPPRESS)
 
     parser.add_argument("--bmi160-interface", choices=["spi", "i2c"], default="spi", help="BMI160 connection type.")
     parser.add_argument("--spi-bus", type=int, default=0, help="SPI bus used by BMI160, e.g. 0 for /dev/spidev0.x.")

@@ -92,15 +92,15 @@ class SharedImuWorker:
             self.thread.join(timeout=timeout)
 
     def run(self) -> None:
-        imu_mod = load_python_file("demo_imu_models", PROJECT_ROOT / "IMU" / "run_imu_models.py")
+        imu_mod = load_python_file("demo_imu_models", PROJECT_ROOT / "imu" / "run_imu_models.py")
         crash_threshold = None
-        crash_ai = None
+        crash_neural = None
         if "crash_imu" in self.models:
-            crash_dir = PROJECT_ROOT / "raspberry_pi_crash_detector"
+            crash_dir = PROJECT_ROOT / "crash_detector"
             sys.path.insert(0, str(crash_dir))
             import imu_threshold_detector as crash_threshold
 
-            crash_ai = self._load_crash_ai(crash_dir)
+            crash_neural = self._load_crash_neural(crash_dir)
 
         driving_models = {model for model in ("harsh", "lane", "aggressive") if model in self.models}
         loaded = None
@@ -127,21 +127,21 @@ class SharedImuWorker:
 
         try:
             imu_mod.calibrate_gyro(reader, self.gyro_calibration_s, self.driving_rate_hz)
-            self._stream_loop(imu_mod, crash_threshold, crash_ai, reader, loaded, driving_models)
+            self._stream_loop(imu_mod, crash_threshold, crash_neural, reader, loaded, driving_models)
         finally:
             try:
                 reader.close()
             except Exception:
                 pass
 
-    def _load_crash_ai(self, crash_dir: Path) -> dict | None:
+    def _load_crash_neural(self, crash_dir: Path) -> dict | None:
         try:
             from imu_ai_detector import load_artifacts, transform_windows
 
             artifacts = load_artifacts(crash_dir / "models" / "imu_ai")
             metadata = artifacts["metadata"]
             print(
-                "Loaded crash IMU AI: "
+                "Loaded crash IMU neural model: "
                 f"window_size={metadata['window_size']} threshold={metadata['selected_threshold']:.4f}",
                 flush=True,
             )
@@ -157,10 +157,10 @@ class SharedImuWorker:
                 "last_eval": 0.0,
             }
         except Exception as exc:
-            print(f"Crash IMU AI unavailable, using threshold crash IMU only: {exc}", flush=True)
+            print(f"Crash IMU neural model unavailable, using threshold crash IMU only: {exc}", flush=True)
             return None
 
-    def _stream_loop(self, imu_mod, crash_threshold, crash_ai, reader, loaded, driving_models: set[str]) -> None:
+    def _stream_loop(self, imu_mod, crash_threshold, crash_neural, reader, loaded, driving_models: set[str]) -> None:
         import pandas as pd
 
         driving_buffer: deque[Any] = deque(maxlen=int(round(3.5 * self.driving_rate_hz)) + 5)
@@ -221,7 +221,7 @@ class SharedImuWorker:
                 self._evaluate_driving(imu_mod, loaded, driving_models, driving_buffer, driving_last_sent, list(driving_rows_for_proof))
 
             if "crash_imu" in self.models:
-                self._evaluate_crash_ai(crash_ai, crash_row, now)
+                self._evaluate_crash_neural(crash_neural, crash_row, now)
                 if crash_threshold is not None and now - last_crash_eval >= 0.2 and len(crash_rows) >= 8:
                     last_crash_eval = now
                     try:
@@ -319,38 +319,37 @@ class SharedImuWorker:
         if status_parts:
             print("IMU " + " ".join(status_parts), flush=True)
 
-    def _evaluate_crash_ai(self, crash_ai: dict | None, row: dict[str, Any], now: float) -> None:
-        if crash_ai is None:
+    def _evaluate_crash_neural(self, crash_neural: dict | None, row: dict[str, Any], now: float) -> None:
+        if crash_neural is None:
             return
-        if now - crash_ai["last_sample"] >= 1.0:
-            crash_ai["rows"].append(row)
-            crash_ai["last_sample"] = now
-        if len(crash_ai["rows"]) < crash_ai["window_size"] or now - crash_ai["last_eval"] < 1.0:
+        if now - crash_neural["last_sample"] >= 1.0:
+            crash_neural["rows"].append(row)
+            crash_neural["last_sample"] = now
+        if len(crash_neural["rows"]) < crash_neural["window_size"] or now - crash_neural["last_eval"] < 1.0:
             return
-        crash_ai["last_eval"] = now
+        crash_neural["last_eval"] = now
         try:
             import pandas as pd
 
-            window = pd.DataFrame(crash_ai["rows"])[crash_ai["feature_cols"]].to_numpy(dtype=np.float32)
+            window = pd.DataFrame(crash_neural["rows"])[crash_neural["feature_cols"]].to_numpy(dtype=np.float32)
             x_windows = np.asarray([window], dtype=np.float32)
-            x_scaled = crash_ai["transform_windows"](x_windows, crash_ai["scaler"])
-            probability = float(crash_ai["model"].predict(x_scaled, verbose=0).ravel()[0])
+            x_scaled = crash_neural["transform_windows"](x_windows, crash_neural["scaler"])
+            probability = float(crash_neural["model"].predict(x_scaled, verbose=0).ravel()[0])
         except Exception as exc:
-            print(f"Crash IMU AI eval skipped: {exc}", flush=True)
+            print(f"Crash IMU neural eval skipped: {exc}", flush=True)
             return
-        threshold = float(crash_ai["threshold"])
-        print(f"crash IMU AI prob={probability:.4f} threshold={threshold:.4f}", flush=True)
+        threshold = float(crash_neural["threshold"])
+        print(f"crash IMU neural prob={probability:.4f} threshold={threshold:.4f}", flush=True)
         if probability < threshold:
             return
-        proof_path = self.proof_dir / "imu" / f"{utc_now().replace(':', '').replace('-', '')}_CRASH_IMU_AI.csv"
-        write_rows_csv(proof_path, list(crash_ai["rows"]))
+        proof_path = self.proof_dir / "imu" / f"{utc_now().replace(':', '').replace('-', '')}_CRASH_IMU_NEURAL.csv"
+        write_rows_csv(proof_path, list(crash_neural["rows"]))
         if self.fusion is not None:
             self.fusion.mark(
                 "imu",
                 {
-                    "ai_probability": round(probability, 4),
+                    "neural_probability": round(probability, 4),
                     "threshold": round(threshold, 4),
                     "proof_path": str(proof_path),
                 },
             )
-

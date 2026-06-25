@@ -3,7 +3,7 @@ import numpy as np
 import librosa
 import tensorflow as tf
 
-BASE_DIR     = "/home/pi/FYP demo/shouting"
+BASE_DIR     = os.path.dirname(os.path.abspath(__file__))
 CONFIG_PATH  = os.path.join(BASE_DIR, "config.json")
 META_PATH    = os.path.join(BASE_DIR, "metadata.json")
 WEIGHTS_PATH = os.path.join(BASE_DIR, "model.weights.h5")
@@ -147,10 +147,10 @@ def main():
     HITS_OFF    = int(cfg.get("hits_off", 3))
     SILENCE_RMS = float(cfg.get("silence_rms", 0.001))
 
-    print("? Loaded shouting model")
+    print("Loaded shouting model")
     print("   input :", model.input_shape)
     print("   output:", model.output_shape)
-    print(f"??? Live capture: {ARECORD_DEVICE} @ {SR}Hz ({ARECORD_FMT})")
+    print(f"Live capture: {ARECORD_DEVICE} @ {SR}Hz ({ARECORD_FMT})")
     print(f"   EXPECT mel: {Hexp}x{Wexp} | using n_fft={N_FFT}, hop={hop}, center={CENTER}")
     print("\nPress Ctrl+C to stop.\n", flush=True)
 
@@ -159,7 +159,7 @@ def main():
     time.sleep(0.2)
     if proc.poll() is not None:
         err = proc.stderr.read().decode(errors="ignore")
-        print("? arecord exited immediately:\n", err, flush=True)
+        print("arecord exited immediately:\n", err, flush=True)
         return
 
     step_frames = int(SR * STEP_SEC)
@@ -180,7 +180,7 @@ def main():
             raw = read_exact(proc.stdout, step_bytes)
             if raw is None:
                 err = proc.stderr.read().decode(errors="ignore")
-                print("? Audio stream ended.", flush=True)
+                print("Audio stream ended.", flush=True)
                 if err.strip():
                     print("arecord error:\n", err, flush=True)
                 break
@@ -241,13 +241,13 @@ def main():
                 if on_hits >= HITS_ON:
                     triggered = True
                     off_hits = 0
-                    print("?? SHOUTING DETECTED!", flush=True)
+                    print("SHOUTING DETECTED!", flush=True)
             else:
                 off_hits = off_hits + 1 if smooth <= TH_OFF else 0
                 if off_hits >= HITS_OFF:
                     triggered = False
                     on_hits = 0
-                    print("? Shouting ended.", flush=True)
+                    print("Shouting ended.", flush=True)
 
             ts = time.strftime("%H:%M:%S")
             state = "SHOUT" if triggered else "NOT  "

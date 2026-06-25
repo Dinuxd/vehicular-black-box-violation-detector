@@ -8,7 +8,7 @@ import urllib.request
 # -------------------------
 # PATHS
 # -------------------------
-BASE_DIR = "/home/pi/FYP demo/horn-new"
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 MODEL_PATH = os.path.join(BASE_DIR, "horn_cnn_best.keras")
 NORM_PATH  = os.path.join(BASE_DIR, "norm_stats.npz")
 
@@ -205,10 +205,10 @@ def main():
 
     # Load model
     model = tf.keras.models.load_model(MODEL_PATH)
-    print(f"? Loaded model: {model.input_shape} -> {model.output_shape}", flush=True)
-    print(f"? Norm: mean={mean:.6f}, std={std:.6f}", flush=True)
-    print(f"??? POST create -> {events_url}", flush=True)
-    print(f"??? POST finalize -> {finalize_base}/<event_id>/finalize", flush=True)
+    print(f"Loaded model: {model.input_shape} -> {model.output_shape}", flush=True)
+    print(f"Norm: mean={mean:.6f}, std={std:.6f}", flush=True)
+    print(f"POST create -> {events_url}", flush=True)
+    print(f"POST finalize -> {finalize_base}/<event_id>/finalize", flush=True)
     print(f"   device_id={device_id}", flush=True)
 
     # Start audio stream
@@ -216,10 +216,10 @@ def main():
     time.sleep(0.2)
     if proc.poll() is not None:
         err = proc.stderr.read().decode(errors="ignore")
-        print("? arecord exited immediately:\n", err, flush=True)
+        print("arecord exited immediately:\n", err, flush=True)
         return
 
-    print(f"??? Live capture started: {ARECORD_DEVICE} @ {CAPTURE_SR}Hz ({ARECORD_FMT})", flush=True)
+    print(f"Live capture started: {ARECORD_DEVICE} @ {CAPTURE_SR}Hz ({ARECORD_FMT})", flush=True)
     print("Press Ctrl+C to stop.\n", flush=True)
 
     step_frames = int(CAPTURE_SR * STEP_SEC)
@@ -240,14 +240,14 @@ def main():
     # flush old queued at start
     sent_q, fail_q = flush_queue(events_url, finalize_base, headers)
     if sent_q or fail_q:
-        print(f"? queue flush: sent={sent_q} failed={fail_q}", flush=True)
+        print(f"queue flush: sent={sent_q} failed={fail_q}", flush=True)
 
     try:
         while True:
             raw = read_exact(proc.stdout, step_bytes)
             if raw is None:
                 err = proc.stderr.read().decode(errors="ignore")
-                print("? Audio stream ended (arecord stopped).", flush=True)
+                print("Audio stream ended (arecord stopped).", flush=True)
                 if err.strip():
                     print("arecord error:\n", err, flush=True)
                 break
@@ -288,7 +288,7 @@ def main():
                 if on_hits >= HITS_ON:
                     triggered = True
                     off_hits = 0
-                    print("?? HORN DETECTED!", flush=True)
+                    print("HORN DETECTED!", flush=True)
 
                     now = time.time()
                     if now - last_event_ts >= COOLDOWN_SEC:
@@ -311,25 +311,25 @@ def main():
                         try:
                             ok, msg = send_create_then_finalize(events_url, finalize_base, payload, headers)
                             if ok:
-                                print(f"? CREATE+FINALIZE OK event_id={payload['event_id']}", flush=True)
+                                print(f"CREATE+FINALIZE OK event_id={payload['event_id']}", flush=True)
                             else:
-                                print(f"? CREATE/FINALIZE FAIL queued event_id={payload['event_id']} msg={msg}", flush=True)
+                                print(f"CREATE/FINALIZE FAIL queued event_id={payload['event_id']} msg={msg}", flush=True)
                                 enqueue_event(payload)
                         except Exception as e:
-                            print(f"? EXCEPTION queued event_id={payload['event_id']} err={e}", flush=True)
+                            print(f"EXCEPTION queued event_id={payload['event_id']} err={e}", flush=True)
                             enqueue_event(payload)
 
                     # flush after detection
                     sent_q, fail_q = flush_queue(events_url, finalize_base, headers)
                     if sent_q:
-                        print(f"? queue flush: sent={sent_q} remaining_failed={fail_q}", flush=True)
+                        print(f"queue flush: sent={sent_q} remaining_failed={fail_q}", flush=True)
 
             else:
                 off_hits = off_hits + 1 if smooth <= TH_OFF else 0
                 if off_hits >= HITS_OFF:
                     triggered = False
                     on_hits = 0
-                    print("? Horn ended.", flush=True)
+                    print("Horn ended.", flush=True)
 
             ts = time.strftime("%H:%M:%S")
             state = "HORN" if triggered else "NOT "

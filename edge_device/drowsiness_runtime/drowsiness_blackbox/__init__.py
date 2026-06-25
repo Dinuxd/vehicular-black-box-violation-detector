@@ -1,4 +1,4 @@
-"""Driver drowsiness and attention monitoring prototype."""
+"""Driver drowsiness and attention monitoring package."""
 
 __all__ = ["__version__"]
 

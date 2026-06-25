@@ -8,7 +8,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from urllib.parse import urlparse
 
-from .runtime import DROWSINESS_VENV, PROJECT_ROOT
+from .runtime import DEFAULT_VENV, DEPLOY_MODELS_DIR, DROWSINESS_RUNTIME_DIR, DROWSINESS_VENV, PROJECT_ROOT
 from .lte_ppp import interface_ipv4
 
 
@@ -95,26 +95,18 @@ def usable_camera_indices() -> list[int]:
 def collect_health(api_base_url: str | None = None, expected_cameras: int = 2) -> list[HealthItem]:
     cameras = usable_camera_indices()
     items = [
-        exists(PROJECT_ROOT / "shouting" / "venv2" / "bin" / "python"),
+        exists(DEFAULT_VENV / "bin" / "python"),
         exists(DROWSINESS_VENV / "bin" / "python"),
-        exists(PROJECT_ROOT / "IMU" / "run_imu_models.py"),
-        exists(PROJECT_ROOT / "shouting" / "model.weights.h5"),
-        exists(PROJECT_ROOT / "hello-new" / "hello_cnn_tpool2.keras"),
-        exists(PROJECT_ROOT / "horn-new" / "horn_cnn_best.keras"),
-        exists(PROJECT_ROOT / "raspberry_pi_crash_detector" / "models" / "audio" / "cnn_crash_detector.pt"),
-        exists(PROJECT_ROOT / "camera" / "Drowsiness" / "models" / "face_landmarker.task"),
-        exists(PROJECT_ROOT / "camera" / "raspberry_pi_twostage_deploy" / "run_pi_ncnn_onnx.py"),
-        exists(PROJECT_ROOT / "camera" / "pi_deploy_wave3" / "road_line_project" / "crossing" / "run_hybrid_live.py"),
-        exists(
-            PROJECT_ROOT
-            / "camera"
-            / "pi_deploy_wave3"
-            / "road_line_project"
-            / "training_outputs"
-            / "selected_best_model_precision_512_roi"
-            / "models"
-            / "best_model.onnx"
-        ),
+        exists(PROJECT_ROOT / "imu" / "run_imu_models.py"),
+        exists(DEPLOY_MODELS_DIR / "audio" / "shouting_int8.tflite"),
+        exists(DEPLOY_MODELS_DIR / "audio" / "hello_cnn.onnx"),
+        exists(DEPLOY_MODELS_DIR / "audio" / "horn_cnn_best_int8.tflite"),
+        exists(DEPLOY_MODELS_DIR / "audio" / "crash_audio_cnn.onnx"),
+        exists(DEPLOY_MODELS_DIR / "drowsiness" / "eye_model_int8.tflite"),
+        exists(DROWSINESS_RUNTIME_DIR / "models" / "face_landmarker.task"),
+        exists(PROJECT_ROOT / "road_sign_twostage_deploy" / "run_pi_ncnn_onnx.py"),
+        exists(PROJECT_ROOT / "road_line_crossing" / "road_line_project" / "crossing" / "run_hybrid_live.py"),
+        exists(DEPLOY_MODELS_DIR / "road_line" / "best_model.onnx"),
     ]
     for module_name in ("numpy", "tensorflow", "librosa", "spidev", "serial", "requests", "onnxruntime"):
         items.append(HealthItem(f"python module {module_name}", module_available(module_name), "importable via spec"))

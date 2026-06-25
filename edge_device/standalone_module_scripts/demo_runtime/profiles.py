@@ -55,7 +55,7 @@ class Profile:
 PROFILES: dict[str, Profile] = {
     "1": Profile(
         "1",
-        "full demo",
+        "full runtime",
         (
             "harsh",
             "lane",
@@ -200,8 +200,8 @@ def profile_menu() -> str:
         lines.append(f"  {number:>2}  {profile.label:<36} {models}")
     lines.append("")
     lines.append("Examples:")
-    lines.append("  python demo/demo.py --profile 1 --api-base-url https://<tunnel>.trycloudflare.com")
-    lines.append("  python demo/demo.py --profile hello")
-    lines.append("  python demo/demo.py --models hello,horn,shouting")
-    lines.append("  python demo/demo.py --models harsh,aggressive,tamper")
+    lines.append("  python -m demo_runtime.demo --profile 1 --api-base-url https://<tunnel>.trycloudflare.com")
+    lines.append("  python -m demo_runtime.demo --profile hello")
+    lines.append("  python -m demo_runtime.demo --models hello,horn,shouting")
+    lines.append("  python -m demo_runtime.demo --models harsh,aggressive,tamper")
     return "\n".join(lines)

@@ -40,6 +40,8 @@ MAGENTA = (255, 0, 255)
 CYAN = (255, 220, 40)
 RED = (0, 0, 255)
 WHITE = (255, 255, 255)
+DEFAULT_RUNTIME_ROOT = Path(__file__).resolve().parents[3]
+DEFAULT_OUTBOX_DB = DEFAULT_RUNTIME_ROOT / "runtime_outputs" / "runtime" / "outbox" / "events.sqlite3"
 
 
 def _parse_camera_source(value: str):
@@ -419,12 +421,12 @@ def _profile_defaults(profile: str):
     return None, cfg.CROP_TOP_FRACTION, 0.50, 0.42, 0.58
 
 
-def _load_demo_backend(demo_root: Path):
-    demo_root = Path(demo_root)
-    if str(demo_root) not in sys.path:
-        sys.path.insert(0, str(demo_root))
-    from demo.events import EventOutbox, EventSender, build_event
-    from demo.gps import GPSReader
+def _load_runtime_backend(runtime_root: Path):
+    runtime_root = Path(runtime_root)
+    if str(runtime_root) not in sys.path:
+        sys.path.insert(0, str(runtime_root))
+    from demo_runtime.events import EventOutbox, EventSender, build_event
+    from demo_runtime.gps import GPSReader
 
     return EventOutbox, EventSender, build_event, GPSReader
 
@@ -493,11 +495,15 @@ def main() -> int:
     parser.add_argument("--device-id", default=os.environ.get("DEVICE_ID", "pi-001"))
     parser.add_argument("--request-timeout-s", type=float, default=float(os.environ.get("REQUEST_TIMEOUT_S", "5.0")))
     parser.add_argument("--no-backend", action="store_true", help="Only save local lane-crossing proof; do not enqueue/send backend events.")
-    parser.add_argument("--demo-root", default=os.environ.get("DEMO_ROOT", "/home/pi/FYP demo"), help="Parent folder containing demo/events.py.")
+    parser.add_argument(
+        "--runtime-root",
+        default=os.environ.get("RUNTIME_ROOT", str(DEFAULT_RUNTIME_ROOT)),
+        help="Parent folder containing the demo_runtime package.",
+    )
     parser.add_argument(
         "--outbox-db",
-        default=os.environ.get("LANE_OUTBOX_DB", "/home/pi/FYP demo/demo/runtime/outbox/events.sqlite3"),
-        help="SQLite outbox shared with the main demo sender.",
+        default=os.environ.get("LANE_OUTBOX_DB", str(DEFAULT_OUTBOX_DB)),
+        help="SQLite outbox shared with the integrated runtime sender.",
     )
     parser.add_argument("--gps-port", default=os.environ.get("GPS_PORT", "auto"))
     parser.add_argument("--gps-baud", type=int, default=int(os.environ.get("GPS_BAUD", "9600")))
@@ -553,7 +559,7 @@ def main() -> int:
         print("Backend sender disabled by --no-backend; lane events will only be saved locally.", flush=True)
     else:
         try:
-            EventOutbox, EventSender, build_backend_event, GPSReader = _load_demo_backend(Path(args.demo_root))
+            EventOutbox, EventSender, build_backend_event, GPSReader = _load_runtime_backend(Path(args.runtime_root))
         except Exception as exc:
             if args.api_base_url:
                 parser.exit(1, f"ERROR: could not load demo backend sender from {args.demo_root!r}: {exc}\n")

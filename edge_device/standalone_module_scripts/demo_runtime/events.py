@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import contextlib
-import fcntl
 import json
 import queue
 import socket
@@ -16,6 +15,11 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
+
+try:
+    import fcntl
+except ImportError:  # Windows import checks do not provide Unix ioctl support.
+    fcntl = None
 
 
 SUCCESS_CODES = {200, 201, 202}
@@ -242,6 +246,8 @@ class EventSender:
         return {"Content-Type": "application/json"}
 
     def _interface_ipv4(self, interface: str) -> str | None:
+        if fcntl is None:
+            return None
         try:
             with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:
                 ifreq = struct.pack("256s", interface[:15].encode("utf-8"))

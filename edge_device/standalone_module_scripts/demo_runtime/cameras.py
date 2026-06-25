@@ -11,7 +11,7 @@ from pathlib import Path
 
 from .events import EventSender, build_event
 from .processes import ManagedProcess
-from .runtime import DROWSINESS_VENV, PROJECT_ROOT
+from .runtime import DEFAULT_VENV, DROWSINESS_RUNTIME_DIR, DROWSINESS_VENV, PROJECT_ROOT
 
 
 def _video_indices() -> list[int]:
@@ -318,7 +318,7 @@ def build_drowsiness_process(
     print_detections: bool,
     no_buzzer: bool,
 ) -> tuple[ManagedProcess, Path]:
-    drowsy_dir = PROJECT_ROOT / "camera" / "Drowsiness"
+    drowsy_dir = DROWSINESS_RUNTIME_DIR
     log_root = proof_dir / "drowsiness"
     command = [
         str(DROWSINESS_VENV / "bin" / "python"),
@@ -368,9 +368,9 @@ def build_road_sign_process(
     async_preview: bool,
     road_rules=None,
 ) -> ManagedProcess:
-    road_dir = PROJECT_ROOT / "camera" / "raspberry_pi_twostage_deploy"
+    road_dir = PROJECT_ROOT / "road_sign_twostage_deploy"
     command = [
-        str(PROJECT_ROOT / "shouting" / "venv2" / "bin" / "python"),
+        str(DEFAULT_VENV / "bin" / "python"),
         "run_pi_ncnn_onnx.py",
         "--source",
         source,
@@ -419,10 +419,10 @@ def build_lane_crossing_process(
     hysteresis_left: float | None,
     hysteresis_right: float | None,
 ) -> tuple[ManagedProcess, Path]:
-    lane_dir = PROJECT_ROOT / "camera" / "pi_deploy_wave3" / "road_line_project" / "crossing"
+    lane_dir = PROJECT_ROOT / "road_line_crossing" / "road_line_project" / "crossing"
     output_dir = proof_dir / "lane_crossing"
     command = [
-        str(PROJECT_ROOT / "shouting" / "venv2" / "bin" / "python"),
+        str(DEFAULT_VENV / "bin" / "python"),
         "run_hybrid_live.py",
         "--camera",
         camera,

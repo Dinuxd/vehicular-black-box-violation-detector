@@ -472,7 +472,7 @@ class HornWorker(AudioModelWorker):
         import librosa
         import tensorflow as tf
 
-        base_dir = PROJECT_ROOT / "horn-new"
+        base_dir = PROJECT_ROOT / "horn"
         stats = np.load(base_dir / "norm_stats.npz")
         mean = float(np.asarray(stats["mean"]).reshape(-1)[0])
         std = float(np.asarray(stats["std"]).reshape(-1)[0]) + 1e-9
@@ -559,7 +559,7 @@ class HelloWorker(AudioModelWorker):
         os.environ.setdefault("TF_CPP_MIN_LOG_LEVEL", "2")
         import tensorflow as tf
 
-        base_dir = PROJECT_ROOT / "hello-new"
+        base_dir = PROJECT_ROOT / "hello"
         model = self._load_model_with_fallback(tf, base_dir / "hello_cnn_tpool2.keras")
         threshold = self._load_threshold(base_dir)
         detector = HysteresisDetector("hello", "HELLO_WAKEWORD", "LOW", threshold, max(0.0, threshold - 0.05), 0.90, 1, 1, 3.0)
@@ -711,7 +711,7 @@ class CrashAudioWorker(AudioModelWorker):
         self.fusion = fusion
 
     def run(self) -> None:
-        crash_dir = PROJECT_ROOT / "raspberry_pi_crash_detector"
+        crash_dir = PROJECT_ROOT / "crash_detector"
         sys.path.insert(0, str(crash_dir))
         from detect_crash import CrashDetector
 

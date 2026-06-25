@@ -12,8 +12,8 @@ from pathlib import Path
 if __package__ is None or __package__ == "":
     sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from demo.audio import CrashFusion, SharedAudioCapture, build_audio_workers
-from demo.cameras import (
+from .audio import CrashFusion, SharedAudioCapture, build_audio_workers
+from .cameras import (
     DrowsinessEventTailer,
     LaneCrossingEventTailer,
     build_drowsiness_process,
@@ -21,15 +21,15 @@ from demo.cameras import (
     build_road_sign_process,
     resolve_camera_index,
 )
-from demo.events import EventOutbox, EventSender, build_event
-from demo.gps import GPSReader
-from demo.health import collect_health, print_health, usable_camera_indices
-from demo.imu import SharedImuWorker
-from demo.lte_ppp import LTEPPPManager, interface_ready
-from demo.profiles import profile_menu, resolve_models
-from demo.road_rules import GpsSpeedingRule, RoadRuleEngine
-from demo.runtime import RuntimePaths
-from demo.tamper import TamperWorker
+from .events import EventOutbox, EventSender, build_event
+from .gps import GPSReader
+from .health import collect_health, print_health, usable_camera_indices
+from .imu import SharedImuWorker
+from .lte_ppp import LTEPPPManager, interface_ready
+from .profiles import profile_menu, resolve_models
+from .road_rules import GpsSpeedingRule, RoadRuleEngine
+from .runtime import RuntimePaths
+from .tamper import TamperWorker
 
 
 AUDIO_MODELS = {"hello", "horn", "shouting", "crash_audio"}
@@ -136,14 +136,14 @@ class LTEPPPWatchdog:
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description="Vehicular black box full demo orchestrator")
+    parser = argparse.ArgumentParser(description="Vehicular black box integrated runtime orchestrator")
     parser.add_argument("--profile", help="Numeric or named profile, for example 1, 11, all, hello.")
     parser.add_argument("--models", help="Comma-separated models, for example hello,horn,shouting.")
     parser.add_argument("--menu", action="store_true", help="Print numeric profiles and exit.")
     parser.add_argument("--health", action="store_true", help="Run health/startup checks and exit.")
-    parser.add_argument("--run-id", help="Optional run id used under demo/proof/<run-id>.")
+    parser.add_argument("--run-id", help="Optional run id used under runtime_outputs/proof/<run-id>.")
     parser.add_argument("--api-base-url", default=os.environ.get("API_BASE_URL", ""), help="Backend base URL / Cloudflare tunnel.")
-    parser.add_argument("--auth-token", default="", help="Deprecated; accepted but ignored.")
+    parser.add_argument("--auth-token", default="", help="Legacy option; accepted for old command compatibility.")
     parser.add_argument("--device-id", default=os.environ.get("DEVICE_ID", "pi-001"))
     parser.add_argument("--request-timeout-s", type=float, default=float(os.environ.get("REQUEST_TIMEOUT_S", "15.0")))
     parser.add_argument("--send-batch-size", type=int, default=int(os.environ.get("SEND_BATCH_SIZE", "3")))
@@ -171,7 +171,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--lte-apn", default=os.environ.get("LTE_APN", "hutch3g"))
     parser.add_argument("--lte-dial-timeout-s", type=float, default=float(os.environ.get("LTE_DIAL_TIMEOUT_S", "35")))
     parser.add_argument("--lte-watchdog-interval-s", type=float, default=float(os.environ.get("LTE_WATCHDOG_INTERVAL_S", "10")))
-    parser.add_argument("--lte-keepalive", action="store_true", help="Leave the auto-started PPP dialer running after demo exit.")
+    parser.add_argument("--lte-keepalive", action="store_true", help="Leave the auto-started PPP dialer running after runtime exit.")
 
     parser.add_argument("--audio-device", default=os.environ.get("AUDIO_DEVICE", "plughw:CARD=sndrpigooglevoi,DEV=0"))
     parser.add_argument("--audio-rate", type=int, default=int(os.environ.get("AUDIO_RATE", "44100")))
@@ -356,7 +356,7 @@ def main(argv: list[str] | None = None) -> int:
 
     def request_stop(signum=None, frame=None) -> None:
         _ = signum, frame
-        print("\nStopping demo...", flush=True)
+        print("\nStopping runtime...", flush=True)
         stop_event.set()
 
     signal.signal(signal.SIGINT, request_stop)
@@ -573,7 +573,7 @@ def main(argv: list[str] | None = None) -> int:
             lane_crossing_tailer = LaneCrossingEventTailer(output_dir, sender, args.device_id, gps_payload, stop_event)
             lane_crossing_tailer.start()
 
-        print("Demo running. Press Ctrl+C to stop.", flush=True)
+        print("Integrated runtime running. Press Ctrl+C to stop.", flush=True)
         while not stop_event.is_set():
             for process in processes:
                 code = process.poll()

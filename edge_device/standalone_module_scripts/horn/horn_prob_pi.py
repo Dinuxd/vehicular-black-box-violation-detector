@@ -7,9 +7,9 @@ import matplotlib.pyplot as plt
 import tensorflow as tf
 
 # -------------------------
-# PATHS (Raspberry Pi)
+# PATHS
 # -------------------------
-BASE_DIR = "/home/pi/horn-new"
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 MODEL_PATH = os.path.join(BASE_DIR, "horn_cnn_best.keras")
 NORM_STATS_PATH = os.path.join(BASE_DIR, "norm_stats.npz")
 REC_WAV_PATH = os.path.join(BASE_DIR, "recorded.wav")
