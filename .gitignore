@@ -1,0 +1,63 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+env/
+
+# Node / frontend
+node_modules/
+dist/
+build/
+.vite/
+.turbo/
+
+# Go
+*.exe
+*.test
+coverage.out
+.gocache/
+.gomodcache/
+
+# Local configuration and credentials
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Runtime output, logs, media, and local databases
+runtime_output/
+outputs/
+predictions/
+debug_outputs/
+blackbox_logs/
+detections/
+clips/
+proof/
+logs/
+uploads/
+local-pg-data/
+*.log
+*.jsonl
+*.db
+*.sqlite
+*.sqlite3
+*.mp4
+*.avi
+*.mov
+*.mkv
+*.wav
+
+# Archives are usually local exports. PCB Gerbers are intentional deliverables.
+*.zip
+!hardware/pcb/*.zip
+
+# OS/editor noise
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

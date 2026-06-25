@@ -1,0 +1,14 @@
+{
+  "source": "C:\\Users\\Dinupa Devinda\\Desktop\\FYP\\Organized\\Word Detection\\checkpoints\\hello_cnn.pt",
+  "sample_rate": 16000,
+  "duration_s": 1.0,
+  "n_mels": 40,
+  "n_fft": 400,
+  "hop_length": 160,
+  "threshold": 0.35,
+  "classes": [
+    "non_hello",
+    "hello"
+  ],
+  "notes": "ONNX fallback used for Pi runtime when the selected Keras Lambda model cannot be converted cleanly."
+}

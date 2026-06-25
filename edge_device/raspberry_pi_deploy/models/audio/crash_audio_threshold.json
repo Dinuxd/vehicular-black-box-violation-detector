@@ -1,0 +1,5 @@
+{
+  "threshold": 0.6088888888888889,
+  "rule": "highest precision with recall >= 0.85",
+  "min_recall_target": 0.85
+}

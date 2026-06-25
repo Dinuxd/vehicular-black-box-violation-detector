@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link id="favicon" rel="icon" type="image/svg+xml" href="/favicon_light.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Vehicularbbx portal</title>
+    <script type="text/javascript" src="/env.js"></script>
+    <style>
+      html,
+      body,
+      #at,
+      #root {
+        min-height: 100%;
+      }
+
+      body {
+        margin: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="at">
+      <div id="root"></div>
+    </div>
+    <script type="module" src="/src/main.tsx"></script>
+    <script>
+      const lightIcon = '/favicon_light.png';
+      const darkIcon = '/favicon_dark.png';
+
+      function setFavicon(isDark) {
+        const icon = document.getElementById('favicon');
+        icon.href = isDark ? darkIcon : lightIcon;
+      }
+
+      const darkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+      setFavicon(darkScheme.matches);
+
+      darkScheme.addEventListener('change', (event) => {
+        setFavicon(event.matches);
+      });
+    </script>
+  </body>
+</html>

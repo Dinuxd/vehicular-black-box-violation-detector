@@ -1,0 +1,54 @@
+[
+  {
+    "trip_id": "trip_001",
+    "driver_id": "driver_A",
+    "risk_index": 72,
+    "risk_level": "High",
+    "total_events": 4,
+    "top_violations": [
+      {
+        "violation_type": "speeding",
+        "count": 1,
+        "points": 23.76
+      },
+      {
+        "violation_type": "driver_drowsiness",
+        "count": 1,
+        "points": 22.5
+      },
+      {
+        "violation_type": "harsh_braking",
+        "count": 1,
+        "points": 16.02
+      }
+    ],
+    "critical_flags": [],
+    "start_time": "2026-05-21T08:00:00",
+    "end_time": "2026-05-21T08:03:00"
+  },
+  {
+    "trip_id": "trip_002",
+    "driver_id": "driver_B",
+    "risk_index": 80,
+    "risk_level": "Critical",
+    "total_events": 2,
+    "top_violations": [
+      {
+        "violation_type": "crash",
+        "count": 1,
+        "points": 45.0
+      },
+      {
+        "violation_type": "tamper",
+        "count": 1,
+        "points": 35.0
+      }
+    ],
+    "critical_flags": [
+      "crash",
+      "tamper"
+    ],
+    "start_time": "2026-05-21T09:00:00",
+    "end_time": "2026-05-21T09:05:00"
+  }
+]

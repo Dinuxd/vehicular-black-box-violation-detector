@@ -1,0 +1,6 @@
+mediapipe==0.10.18
+numpy==1.26.4
+jax==0.4.38
+jaxlib==0.4.38
+opencv-contrib-python==4.11.0.86
+gpiozero==2.0.1

@@ -1,0 +1,97 @@
+{
+  "feature_columns": [
+    "Acc_X",
+    "Acc_Y",
+    "Acc_Z",
+    "Gyro_X",
+    "Gyro_Y",
+    "Gyro_Z",
+    "Speed_kmh"
+  ],
+  "label_column": "Crash_Label",
+  "window_size": 16,
+  "stride": 16,
+  "selected_threshold": 0.45,
+  "validation_threshold_selection": {
+    "threshold": 0.45,
+    "f1": 1.0,
+    "precision": 1.0,
+    "recall": 1.0
+  },
+  "train_windows": 350,
+  "validation_windows": 75,
+  "test_windows": 75,
+  "train_positive_windows": 44,
+  "validation_positive_windows": 10,
+  "test_positive_windows": 9,
+  "test_metrics_threshold_0_5": {
+    "model": "CNN-GRU threshold 0.50",
+    "threshold": 0.5,
+    "accuracy": 1.0,
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0,
+    "roc_auc": 1.0,
+    "pr_auc": 1.0000000000000002
+  },
+  "test_metrics_selected_threshold": {
+    "model": "CNN-GRU validation F1 threshold",
+    "threshold": 0.45,
+    "accuracy": 0.9866666666666667,
+    "precision": 0.9,
+    "recall": 1.0,
+    "f1": 0.9473684210526315,
+    "roc_auc": 1.0,
+    "pr_auc": 1.0000000000000002
+  },
+  "baseline_results": [
+    {
+      "model": "Train-only min-speed threshold",
+      "threshold": -6.026058673858643,
+      "accuracy": 1.0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "roc_auc": 1.0,
+      "pr_auc": 1.0000000000000002
+    },
+    {
+      "model": "Logistic regression summary features",
+      "threshold": 0.5,
+      "accuracy": 1.0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "roc_auc": 1.0,
+      "pr_auc": 1.0000000000000002
+    },
+    {
+      "model": "Random forest summary features",
+      "threshold": 0.5,
+      "accuracy": 1.0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "roc_auc": 1.0,
+      "pr_auc": 1.0
+    },
+    {
+      "model": "Majority / train prevalence",
+      "threshold": 0.5,
+      "accuracy": 0.88,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "roc_auc": 0.5,
+      "pr_auc": 0.12
+    }
+  ],
+  "assumptions": [
+    "TensorFlow/Keras compact CNN-GRU model.",
+    "Binary accident detection only; no minor/severe labels are available.",
+    "Motion_Intensity excluded from the deep model because it is too directly separable.",
+    "Non-overlapping 16-second windows are used to reduce overlapping-window leakage.",
+    "Stratified window split is used because this CSV contains one continuous crash segment.",
+    "Results should be treated as a prototype demonstration, not production crash-detection proof."
+  ]
+}

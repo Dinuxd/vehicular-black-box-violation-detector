@@ -1,0 +1,17 @@
+# Python dependencies for the Wave 1 (ONNX) road-line crossing flow on Raspberry Pi.
+# Install with:  pip install -r requirements_pi.txt
+#
+# Wave 1 runs the model via ONNX Runtime, so the Pi does NOT need PyTorch.
+#   * Use 64-bit Raspberry Pi OS (aarch64).
+#   * opencv-python-headless is the no-GUI build (right for a headless / VNC Pi).
+#   * convert_to_h264.py needs imageio-ffmpeg (only if you convert clips on the Pi).
+
+onnxruntime
+numpy
+pillow
+opencv-python-headless
+imageio-ffmpeg
+
+# NOTE: torch / torchvision are NOT needed on the Pi for the ONNX path.
+# They are only required to RUN export_onnx.py (do that ONCE on your laptop):
+#   pip install torch torchvision onnxruntime

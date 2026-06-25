@@ -1,0 +1,169 @@
+{
+  "trip": {
+    "trip_id": "trip_live",
+    "driver_id": "driver_live"
+  },
+  "output": {
+    "directory": "runtime_output",
+    "events_jsonl": "events.jsonl",
+    "events_json": "events.json",
+    "scores_json": "scores.json",
+    "score_every_events": 5,
+    "driver_violation_index_path": "../../scoring/driver_violation_index/driving_index.py"
+  },
+  "runtime": {
+    "queue_max_size": 512,
+    "heartbeat_seconds": 10.0
+  },
+  "audio": {
+    "enabled": true,
+    "sample_rate": 44100,
+    "block_seconds": 0.05,
+    "window_seconds": 2.0,
+    "inference_interval_seconds": 0.25,
+    "device": null,
+    "models": {
+      "horn": {
+        "enabled": true,
+        "path": "models/audio/horn_cnn_best_int8.tflite",
+        "norm_path": "models/audio/horn_norm_stats.npz",
+        "threshold": 0.70,
+        "violation_type": "horn",
+        "n_mels": 128,
+        "sample_rate": 44100,
+        "window_seconds": 1.0,
+        "hop_length": 512,
+        "n_fft": 1024,
+        "debounce_hits": 2,
+        "debounce_window_seconds": 1.5,
+        "cooldown_seconds": 5.0
+      },
+      "shouting": {
+        "enabled": true,
+        "path": "models/audio/shouting_int8.tflite",
+        "mean_path": "models/audio/shouting_mean.npy",
+        "std_path": "models/audio/shouting_std.npy",
+        "threshold": 0.70,
+        "violation_type": "shouting",
+        "n_mels": 128,
+        "sample_rate": 44100,
+        "window_seconds": 1.0,
+        "hop_length": 512,
+        "n_fft": 1024,
+        "debounce_hits": 2,
+        "debounce_window_seconds": 1.5,
+        "cooldown_seconds": 5.0
+      },
+      "hello": {
+        "enabled": true,
+        "path": "models/audio/hello_cnn.onnx",
+        "threshold": 0.35,
+        "violation_type": "phone_call",
+        "n_mels": 40,
+        "sample_rate": 16000,
+        "window_seconds": 1.0,
+        "hop_length": 160,
+        "n_fft": 400,
+        "fmin": 20.0,
+        "mel_norm": "slaney",
+        "debounce_hits": 1,
+        "debounce_window_seconds": 1.0,
+        "cooldown_seconds": 10.0
+      },
+      "crash_audio": {
+        "enabled": true,
+        "path": "models/audio/crash_audio_cnn.onnx",
+        "threshold_path": "models/audio/crash_audio_threshold.json",
+        "threshold": 0.6088888888888889,
+        "violation_type": "crash",
+        "n_mels": 64,
+        "sample_rate": 44100,
+        "window_seconds": 2.0,
+        "hop_length": 512,
+        "n_fft": 1024,
+        "debounce_hits": 2,
+        "debounce_window_seconds": 2.0,
+        "cooldown_seconds": 30.0
+      }
+    }
+  },
+  "imu": {
+    "enabled": true,
+    "source": {
+      "type": "serial_json",
+      "port": "/dev/ttyACM0",
+      "baudrate": 115200,
+      "csv_replay_path": null
+    },
+    "sample_rate_hz": 20.0,
+    "inference_interval_seconds": 0.25,
+    "models": {
+      "harsh_braking": {
+        "enabled": true,
+        "path": "models/imu/harsh_braking_int8.tflite",
+        "scaler_mu": "models/imu/harsh_braking_scaler_mu.npy",
+        "scaler_std": "models/imu/harsh_braking_scaler_std.npy",
+        "threshold": 0.50,
+        "violation_type": "harsh_braking",
+        "window_seconds": 2.0,
+        "cooldown_seconds": 5.0
+      },
+      "lane_change": {
+        "enabled": true,
+        "path": "models/imu/best_lane_change_detector.joblib",
+        "metadata": "models/imu/best_lane_change_metadata.json",
+        "violation_type": "abrupt_lane_change",
+        "window_seconds": 3.5,
+        "cooldown_seconds": 5.0
+      },
+      "aggressive_driving": {
+        "enabled": true,
+        "path": "models/imu/normal_vs_aggressive_imu3_best_model.joblib",
+        "feature_names": "models/imu/normal_vs_aggressive_imu3_feature_names.json",
+        "config": "models/imu/normal_vs_aggressive_imu3_config.json",
+        "threshold": 0.125,
+        "violation_type": "aggressive_driving",
+        "window_seconds": 2.0,
+        "cooldown_seconds": 10.0
+      },
+      "crash_imu": {
+        "enabled": true,
+        "path": "models/imu/crash_imu_int8.tflite",
+        "metadata": "models/imu/crash_imu_metadata.json",
+        "scaler": "models/imu/crash_imu_scaler.joblib",
+        "threshold": 0.45,
+        "violation_type": "crash",
+        "window_samples": 16,
+        "cooldown_seconds": 30.0
+      }
+    }
+  },
+  "driver_camera": {
+    "enabled": true,
+    "camera_index": 0,
+    "fps": 5.0,
+    "model": "models/drowsiness/eye_model_int8.tflite",
+    "closed_threshold": 0.50,
+    "closed_seconds_required": 2.0,
+    "cooldown_seconds": 20.0,
+    "violation_type": "driver_drowsiness"
+  },
+  "front_camera": {
+    "enabled": true,
+    "camera_index": 1,
+    "fps": 3.0,
+    "detector": "models/road_sign/yolo26n_sign_640_ncnn_model",
+    "detector_fallback_onnx": "models/road_sign/yolo26n_sign_640.onnx",
+    "classifier": "models/road_sign/best_classifier.onnx",
+    "classifier_external_data": "models/road_sign/best_classifier.onnx.data",
+    "classifier_summary": "models/road_sign/classifier_summary.json",
+    "det_imgsz": 640,
+    "det_conf": 0.35,
+    "det_iou": 0.50,
+    "classifier_threshold": 0.65,
+    "reject_class": "other_sign",
+    "crop_margin": 0.15,
+    "speed_sign_violation_type": "speeding",
+    "no_honking_violation_type": "location_risk"
+  }
+}

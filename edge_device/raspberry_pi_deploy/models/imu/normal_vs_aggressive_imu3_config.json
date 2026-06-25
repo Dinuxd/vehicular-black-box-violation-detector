@@ -1,0 +1,38 @@
+{
+  "features": [
+    "yaw_rate",
+    "accel_raw_x_g",
+    "accel_raw_y_g"
+  ],
+  "state_index": {
+    "yaw_rate": 1,
+    "accel_raw_x_g": 2,
+    "accel_raw_y_g": 3
+  },
+  "label_map": {
+    "Normal_Driving": 0,
+    "Critical_Driving": 1
+  },
+  "label_name": {
+    "0": "normal",
+    "1": "aggressive"
+  },
+  "excluded_categories": [
+    "Complex_Traffic_Driving",
+    "Low_Light_Driving",
+    "Rain_Driving",
+    "Snow_Driving"
+  ],
+  "sample_rate_hz": 4,
+  "primary_window_seconds": 2,
+  "primary_window_size": 8,
+  "primary_window_stride": 4,
+  "best_model": "Optuna XGBoost",
+  "best_model_kind": "tabular_raw",
+  "best_model_path": "C:\\Users\\Dinupa Devinda\\Desktop\\FYP\\Organized\\IMU\\Aggresive Driving\\models\\normal_vs_aggressive_imu3_best_model.joblib",
+  "best_threshold": 0.12499999999999999,
+  "metrics_path": "C:\\Users\\Dinupa Devinda\\Desktop\\FYP\\Organized\\IMU\\Aggresive Driving\\reports\\normal_vs_aggressive_metrics.csv",
+  "predictions_path": "C:\\Users\\Dinupa Devinda\\Desktop\\FYP\\Organized\\IMU\\Aggresive Driving\\reports\\normal_vs_aggressive_predictions.csv",
+  "error_cases_path": "C:\\Users\\Dinupa Devinda\\Desktop\\FYP\\Organized\\IMU\\Aggresive Driving\\reports\\normal_vs_aggressive_error_cases.csv",
+  "notes": "Inputs are only yaw_rate, accel_raw_x_g, and accel_raw_y_g."
+}

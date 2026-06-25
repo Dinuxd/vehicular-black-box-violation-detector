@@ -1,0 +1,17 @@
+{
+  "test": {
+    "loss": 0.9941967129707336,
+    "compile_metrics": 0.999347448348999
+  },
+  "confusion_matrix": [
+    [
+      2259,
+      15
+    ],
+    [
+      4,
+      996
+    ]
+  ],
+  "report": "              precision    recall  f1-score   support\n\n   non-hello     0.9982    0.9934    0.9958      2274\n       hello     0.9852    0.9960    0.9906      1000\n\n    accuracy                         0.9942      3274\n   macro avg     0.9917    0.9947    0.9932      3274\nweighted avg     0.9942    0.9942    0.9942      3274\n"
+}

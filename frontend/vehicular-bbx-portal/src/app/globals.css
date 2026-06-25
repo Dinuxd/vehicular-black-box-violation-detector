@@ -1,0 +1,203 @@
+@import url(https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap);
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 24 6% 10%;
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 4%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 4%;
+    --primary: 240 6% 10%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 240 5% 96%;
+    --secondary-foreground: 240 6% 10%;
+    --muted: 240 5% 96%;
+    --muted-foreground: 240 4% 46%;
+    --accent: 240 5% 96%;
+    --accent-foreground: 240 6% 10%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 86% 97%;
+    --border: 240 6% 90%;
+    --input: 240 6% 90%;
+    --ring: 240 6% 10%;
+    --chart-1: 173 58% 39%;
+    --chart-2: 292 84% 61%; /* Fuchsia/Magenta - Application/Recruitment charts */
+    --chart-3: 197 37% 24%;
+    --chart-4: 43 74% 66%;
+    --chart-5: 27 87% 67%;
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5% 26%;
+    --sidebar-primary: 240 6% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 5% 96%;
+    --sidebar-accent-foreground: 240 6% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 240 5% 65%;
+    --radius: 0.5rem;
+    --gradient-red: 219 69 55;
+    --gradient-blue: 66 133 244;
+    --gradient-yellow: 244 180 0;
+    --gradient-green: 15 157 88;
+  }
+  .dark {
+    --background: 240 10% 4%;
+    --foreground: 0 0% 98%;
+    --card: 240 10% 4%;
+    --card-foreground: 0 0% 98%;
+    --popover: 240 10% 4%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 0 0% 98%;
+    --primary-foreground: 240 6% 10%;
+    --secondary: 240 4% 16%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 240 4% 16%;
+    --muted-foreground: 240 5% 65%;
+    --accent: 240 4% 16%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 63% 31%;
+    --destructive-foreground: 0 86% 97%;
+    --border: 240 4% 16%;
+    --input: 240 4% 16%;
+    --ring: 240 5% 84%;
+    --chart-1: 220 70% 50%;
+    --chart-2: 292 84% 61%; /* Fuchsia/Magenta - Application/Recruitment charts */
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 160 60% 45%;
+    --sidebar-background: 240 6% 10%;
+    --sidebar-foreground: 240 5% 96%;
+    --sidebar-primary: 224 76% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 4% 16%;
+    --sidebar-accent-foreground: 240 5% 96%;
+    --sidebar-border: 240 4% 16%;
+    --sidebar-ring: 240 5% 84%;
+    --gradient-red: 219 69 55;
+    --gradient-blue: 66 133 244;
+    --gradient-yellow: 244 180 0;
+    --gradient-green: 15 157 88;
+  }
+
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+@layer components {
+  .evaluation-summary-gradient {
+    background: linear-gradient(
+      265.15deg,
+      hsla(278, 69%, 36%, 0.05) 0%,
+      hsla(290, 65%, 38%, 0.08) 15%,
+      hsla(302, 62%, 40%, 0.12) 30%,
+      hsla(315, 59%, 43%, 0.2) 44.06%,
+      hsla(325, 70%, 48%, 0.15) 60%,
+      hsla(332, 85%, 55%, 0.1) 77%,
+      hsla(340, 99%, 62%, 0.05) 94.39%
+    );
+  }
+}
+
+@layer utilities {
+  .scrollbar-gutter-stable {
+    scrollbar-gutter: stable;
+  }
+
+  .dropdown-content-width-full {
+    width: var(--radix-dropdown-menu-trigger-width);
+    max-height: var(--radix-dropdown-menu-content-available-height);
+  }
+
+  .rich-text-html h1 {
+    @apply mb-2 mt-4 text-xl font-bold;
+  }
+
+  .rich-text-html h2 {
+    @apply mb-2 mt-4 text-lg font-bold;
+  }
+
+  .rich-text-html h3 {
+    @apply mb-2 mt-4 text-base font-bold;
+  }
+
+  .rich-text-html ul {
+    @apply ml-4 list-disc pb-2 pt-2;
+  }
+
+  .rich-text-html ol {
+    @apply ml-4 list-decimal pb-2 pt-2;
+  }
+
+  .rich-text-html li {
+    @apply pb-1 pt-1;
+  }
+
+  .rich-text-html .tiptap p.is-editor-empty:first-child::before {
+    @apply pointer-events-none float-left h-0 text-gray-400;
+    content: attr(data-placeholder);
+  }
+}
+
+*:not(html):not(body):not(.default-scrollbar)::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+
+*:not(html):not(body):not(.default-scrollbar)::-webkit-scrollbar-track {
+  border-radius: 10px;
+  background: hsla(216, 12%, 84%, 1);
+}
+
+*:not(html):not(body):not(.default-scrollbar)::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  background: hsla(218, 11%, 65%, 1);
+}
+
+*:not(html):not(body):not(.default-scrollbar)::-webkit-scrollbar-thumb:hover {
+  background: hsla(218, 11%, 55%, 1);
+}
+
+.invisible-scrollbar:not(html):not(body):not(.default-scrollbar) {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.invisible-scrollbar:not(html):not(body):not(.default-scrollbar)::-webkit-scrollbar {
+  display: none;
+}
+
+.hover-scrollbar:not(html):not(body):not(.default-scrollbar) {
+  position: relative;
+}
+
+.hover-scrollbar:not(html):not(body):not(.default-scrollbar)::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+
+.hover-scrollbar:not(html):not(body):not(.default-scrollbar)::-webkit-scrollbar-track,
+.hover-scrollbar:not(html):not(body):not(.default-scrollbar)::-webkit-scrollbar-thumb {
+  background: transparent;
+  border-radius: 10px;
+}
+
+/* On hover */
+.hover-scrollbar:not(html):not(body):not(.default-scrollbar):hover::-webkit-scrollbar-track {
+  background: hsla(216, 12%, 84%, 1);
+}
+
+.hover-scrollbar:not(html):not(body):not(.default-scrollbar):hover::-webkit-scrollbar-thumb {
+  background: hsla(218, 11%, 65%, 1);
+}
+
+.hover-scrollbar:not(html):not(body):not(.default-scrollbar):hover::-webkit-scrollbar-thumb:hover {
+  background: hsla(218, 11%, 55%, 1);
+}

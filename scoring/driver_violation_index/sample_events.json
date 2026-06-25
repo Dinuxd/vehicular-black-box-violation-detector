@@ -1,0 +1,45 @@
+{
+  "trips": [
+    {
+      "trip_id": "trip_003",
+      "driver_id": "driver_C",
+      "events": [
+        {
+          "timestamp": "2026-05-21T10:00:00",
+          "violation_type": "horn",
+          "confidence": 0.8,
+          "severity": 1.0,
+          "duration_s": 1.0,
+          "lat": 6.9271,
+          "lon": 79.8612,
+          "metadata": {
+            "source": "external_audio"
+          }
+        },
+        {
+          "timestamp": "2026-05-21T10:01:30",
+          "violation_type": "aggressive_driving",
+          "confidence": 0.9,
+          "severity": 1.4,
+          "duration_s": 8.0,
+          "lat": 6.9281,
+          "lon": 79.8622
+        },
+        {
+          "timestamp": "2026-05-21T10:02:10",
+          "violation_type": "abrupt_lane_change",
+          "confidence": 0.85,
+          "severity": 1.1,
+          "duration_s": 2.0,
+          "lat": 6.9291,
+          "lon": 79.8632
+        }
+      ]
+    },
+    {
+      "trip_id": "trip_empty",
+      "driver_id": "driver_Z",
+      "events": []
+    }
+  ]
+}

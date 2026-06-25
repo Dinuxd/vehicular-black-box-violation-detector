@@ -1,0 +1,3 @@
+trip_id,driver_id,risk_index,risk_level,total_events,top_violations,critical_flags,start_time,end_time
+trip_003,driver_C,45,Moderate,3,"[{""violation_type"":""aggressive_driving"",""count"":1,""points"":27.72},{""violation_type"":""abrupt_lane_change"",""count"":1,""points"":13.09},{""violation_type"":""horn"",""count"":1,""points"":4.0}]",[],2026-05-21T10:00:00,2026-05-21T10:02:10
+trip_empty,driver_Z,0,Low,0,[],[],,

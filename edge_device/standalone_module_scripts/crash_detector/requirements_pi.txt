@@ -1,0 +1,10 @@
+numpy
+scipy
+pandas
+scikit-learn==1.7.2
+joblib
+soundfile
+torch
+sounddevice
+smbus2
+spidev

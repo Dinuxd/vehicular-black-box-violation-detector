@@ -1,0 +1,77 @@
+name: ci
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  security:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: python scripts/secret_scan.py
+
+  python:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Compile Python files
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import py_compile
+          import sys
+
+          skip = {'.git', '.venv', 'venv', 'node_modules', 'dist', 'build', '__pycache__'}
+          failed = []
+          for path in Path('.').rglob('*.py'):
+              if any(part in skip for part in path.parts):
+                  continue
+              try:
+                  py_compile.compile(str(path), doraise=True)
+              except Exception as exc:
+                  failed.append((path, exc))
+
+          for path, exc in failed:
+              print(f'{path}: {exc}')
+          sys.exit(1 if failed else 0)
+          PY
+
+  go:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.25.x"
+      - name: Test ingest service
+        working-directory: backend/ingest-service
+        run: go test ./...
+      - name: Test media service
+        working-directory: backend/media-service
+        run: go test ./...
+
+  frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.2.2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: pnpm
+          cache-dependency-path: frontend/vehicular-bbx-portal/pnpm-lock.yaml
+      - name: Install
+        working-directory: frontend/vehicular-bbx-portal
+        run: pnpm install --frozen-lockfile
+      - name: Build
+        working-directory: frontend/vehicular-bbx-portal
+        run: pnpm run build

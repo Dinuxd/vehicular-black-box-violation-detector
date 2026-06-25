@@ -1,0 +1,102 @@
+{
+  "target_hardware": "Raspberry Pi 4B 8GB",
+  "runtime_policy": "Use TFLite/ONNX/NCNN for neural models and keep small joblib IMU models as-is.",
+  "models": {
+    "drowsiness": {
+      "source": "../Drowsiness/models/eye_model_int8.tflite",
+      "deploy": "models/drowsiness/eye_model_int8.tflite",
+      "format": "tflite_int8",
+      "action": "copy_existing",
+      "notes": "Use existing INT8 TFLite model, not best_model.keras."
+    },
+    "road_sign_detector": {
+      "source": "../Road sign detection/new/runs/twostage_detector/yolo26n_sign_640/weights/best.pt",
+      "deploy": "models/road_sign/yolo26n_sign_640_ncnn_model",
+      "fallback_deploy": "models/road_sign/yolo26n_sign_640.onnx",
+      "format": "ncnn_or_onnx",
+      "action": "export_with_ultralytics"
+    },
+    "road_sign_classifier": {
+      "source": "../Road sign detection/new/runs/twostage_classifier/20260514_002912/best_classifier.onnx",
+      "data_source": "../Road sign detection/new/runs/twostage_classifier/20260514_002912/best_classifier.onnx.data",
+      "deploy": "models/road_sign/best_classifier.onnx",
+      "data_deploy": "models/road_sign/best_classifier.onnx.data",
+      "summary": "../Road sign detection/new/runs/twostage_classifier/20260514_002912/summary.json",
+      "format": "onnx",
+      "action": "copy_existing"
+    },
+    "road_line_crossing": {
+      "source": "../Rasbarry pi/camera/pi_deploy_wave3/road_line_project/training_outputs/selected_best_model_precision_512_roi/models/best_model.onnx",
+      "deploy": "models/road_line/best_model.onnx",
+      "format": "onnx",
+      "action": "copy_existing",
+      "notes": "Segmentation model used by the standalone line-crossing runtime."
+    },
+    "horn": {
+      "source": "../Horn/Models/horn_cnn_best.keras",
+      "deploy": "models/audio/horn_cnn_best_int8.tflite",
+      "norm_source": "../Horn/Models/norm_stats.npz",
+      "norm_deploy": "models/audio/horn_norm_stats.npz",
+      "format": "tflite_int8",
+      "action": "convert_keras"
+    },
+    "shouting": {
+      "config_source": "../Shouting Detection/config.json",
+      "weights_source": "../Shouting Detection/model.weights.h5",
+      "deploy": "models/audio/shouting_int8.tflite",
+      "mean_source": "../Shouting Detection/mean.npy",
+      "std_source": "../Shouting Detection/std.npy",
+      "format": "tflite_int8",
+      "action": "rebuild_keras_from_json_and_convert"
+    },
+    "hello": {
+      "source": "../Word Detection/Models/new/2/hello_cnn_tpool2.keras",
+      "deploy": "models/audio/hello_cnn_tpool2_int8.tflite",
+      "fallback_source": "../Word Detection/checkpoints/hello_cnn.pt",
+      "fallback_deploy": "models/audio/hello_cnn.onnx",
+      "format": "tflite_int8",
+      "action": "convert_keras",
+      "notes": "Selected over the larger latest model because its metrics are stronger. ONNX PyTorch checkpoint fallback is exported for runtime if the Keras Lambda model cannot convert cleanly."
+    },
+    "crash_audio": {
+      "source": "../Crash detection/Audio/crash_detector_outputs/cnn_crash_detector.pt",
+      "deploy": "models/audio/crash_audio_cnn.onnx",
+      "threshold_source": "../Crash detection/Audio/crash_detector_outputs/threshold.json",
+      "threshold_deploy": "models/audio/crash_audio_threshold.json",
+      "format": "onnx",
+      "action": "export_pytorch"
+    },
+    "crash_imu": {
+      "source": "../Crash detection/IMU AI/models/accident_cnn_gru.keras",
+      "deploy": "models/imu/crash_imu_int8.tflite",
+      "scaler_source": "../Crash detection/IMU AI/models/scaler.joblib",
+      "metadata_source": "../Crash detection/IMU AI/models/metadata.json",
+      "format": "tflite_int8",
+      "action": "convert_keras_unrolled_gru",
+      "notes": "Rebuilds the fixed 16-sample GRU with unroll=True before TFLite export so the Pi runtime does not need the Flex delegate."
+    },
+    "harsh_braking": {
+      "source": "../IMU/Harsh Breaking/HarshBrakeML/outputs/models/best_cnn_cpu.keras",
+      "deploy": "models/imu/harsh_braking_int8.tflite",
+      "scaler_mu_source": "../IMU/Harsh Breaking/HarshBrakeML/outputs/models/scaler_mu.npy",
+      "scaler_std_source": "../IMU/Harsh Breaking/HarshBrakeML/outputs/models/scaler_std.npy",
+      "format": "tflite_int8",
+      "action": "convert_keras"
+    },
+    "lane_change": {
+      "source": "../IMU/Lane changing/models/best_lane_change_detector.joblib",
+      "metadata_source": "../IMU/Lane changing/models/best_lane_change_metadata.json",
+      "deploy": "models/imu/best_lane_change_detector.joblib",
+      "format": "joblib",
+      "action": "copy_existing"
+    },
+    "aggressive_driving": {
+      "source": "../IMU/Aggresive Driving/models/normal_vs_aggressive_imu3_best_model.joblib",
+      "feature_names_source": "../IMU/Aggresive Driving/models/normal_vs_aggressive_imu3_feature_names.json",
+      "config_source": "../IMU/Aggresive Driving/models/normal_vs_aggressive_imu3_config.json",
+      "deploy": "models/imu/normal_vs_aggressive_imu3_best_model.joblib",
+      "format": "joblib",
+      "action": "copy_existing"
+    }
+  }
+}
