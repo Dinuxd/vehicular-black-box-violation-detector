@@ -10,6 +10,4 @@ This was a 3-member Final Year Project titled **Vehicular Black Box: Vehicle Vio
 | Marlon K.V.A. | GSM/LTE communication setup, backend services, frontend dashboard, database design, driver scoring method implementation, system integration and finalization. |
 | W.M.H.D.B. Wijekoon | Hardware implementation, PCB and power circuit work, enclosure/electronics integration, embedded hardware support, module integration/testing support. |
 
-Supervisor credited in the final presentation: Prof. Chulantha Kulasekara.
 
-The exact task allocation is summarized from the final presentation and project materials available in the local FYP folder at the time this repository was packaged.
