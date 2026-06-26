@@ -29,10 +29,10 @@
   "primary_window_stride": 4,
   "best_model": "Optuna XGBoost",
   "best_model_kind": "tabular_raw",
-  "best_model_path": "C:\\Users\\Dinupa Devinda\\Desktop\\FYP\\Organized\\IMU\\Aggresive Driving\\models\\normal_vs_aggressive_imu3_best_model.joblib",
+  "best_model_path": "models/imu/normal_vs_aggressive_imu3_best_model.joblib",
   "best_threshold": 0.12499999999999999,
-  "metrics_path": "C:\\Users\\Dinupa Devinda\\Desktop\\FYP\\Organized\\IMU\\Aggresive Driving\\reports\\normal_vs_aggressive_metrics.csv",
-  "predictions_path": "C:\\Users\\Dinupa Devinda\\Desktop\\FYP\\Organized\\IMU\\Aggresive Driving\\reports\\normal_vs_aggressive_predictions.csv",
-  "error_cases_path": "C:\\Users\\Dinupa Devinda\\Desktop\\FYP\\Organized\\IMU\\Aggresive Driving\\reports\\normal_vs_aggressive_error_cases.csv",
+  "metrics_path": null,
+  "predictions_path": null,
+  "error_cases_path": null,
   "notes": "Inputs are only yaw_rate, accel_raw_x_g, and accel_raw_y_g."
 }

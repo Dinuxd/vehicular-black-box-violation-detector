@@ -12,6 +12,8 @@ The system runs on a Raspberry Pi 4B edge device connected to cameras, microphon
 
 ## Architecture
 
+![System block diagram](docs/assets/system_block_diagram.png)
+
 ```mermaid
 flowchart LR
   subgraph Vehicle["Vehicle Edge Device - Raspberry Pi 4B"]
@@ -74,9 +76,8 @@ backend/ingest-service/                Go event/device/scoring API
 backend/media-service/                 Go media evidence service
 frontend/vehicular-bbx-portal/         React dashboard
 scoring/driver_violation_index/        Python driver risk index model
-hardware/pcb/                          PCB/Gerber hardware deliverables
+hardware/pcb/                          PCB visuals and Gerber hardware deliverables
 docs/                                  System documentation
-reports/presentation_notes.md          Markdown notes from final presentation
 ```
 
 ## Quick Start
@@ -143,6 +144,14 @@ Raw datasets are intentionally not committed here. The IMU driving-event dataset
 - Zenodo: https://zenodo.org/records/20807506
 - Kaggle: https://www.kaggle.com/datasets/dinupadevinda/byd-atto-bmi160-imu-driving-events
 
+The aggressive-driving module also references selected non-media metadata from the Hugging Face Extreme Driving Conditions dataset:
+
+- Hugging Face: https://huggingface.co/datasets/Stary108/Extreme_Driving_Conditions_Dataset
+
+The road-sign module uses a Sri Lankan traffic-sign dataset source from Roboflow:
+
+- Roboflow Universe: https://universe.roboflow.com/traffic-signs-in-sri-lanka/traffic-signs-in-sri-lanka
+
 Horn detection also references an external audio dataset source:
 
 - Mendeley: https://data.mendeley.com/datasets/y5stjsnp8s/2
@@ -150,6 +159,7 @@ Horn detection also references an external audio dataset source:
 ## More Docs
 
 - [System design](SYSTEM_DESIGN.md)
+- [Dataset notes](docs/datasets.md)
 - [Dependencies](DEPENDENCIES.md)
 - [Limitations](LIMITATIONS.md)
 - [Security and privacy](SECURITY_AND_PRIVACY.md)

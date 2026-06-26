@@ -1,5 +1,7 @@
 # Architecture
 
+![System block diagram](assets/system_block_diagram.png)
+
 The architecture has three layers:
 
 1. Edge sensing and inference on Raspberry Pi 4B.

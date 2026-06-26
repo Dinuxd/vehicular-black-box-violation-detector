@@ -15,7 +15,7 @@
 
 ## Hardware Folder
 
-`hardware/pcb/` contains PCB/Gerber deliverables and related design files. Gerber zip files are intentionally committed because they are hardware artifacts, unlike runtime logs or dataset archives.
+`hardware/pcb/` contains PCB screenshots and Gerber deliverables for the power and functional boards. Gerber zip files are intentionally committed because they are hardware artifacts, unlike runtime logs or dataset archives.
 
 ## Integration Notes
 
